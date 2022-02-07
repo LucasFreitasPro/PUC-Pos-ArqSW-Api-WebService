@@ -1,0 +1,89 @@
+{
+	"info": {
+		"_postman_id": "e1320f1f-ec0b-432c-9556-f42fcd789805",
+		"name": "Facebook",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth Permission",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "Exchanging Code for an Access Token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "Me",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://graph.facebook.com/me?access_token=EAA1BcZCaHv08BAFmCOJGkAAUY8Y11ZCzRHdx4CitEFa6wZCKfcOptw0leZAN33UgopPGwugZAJdW4r7qtRY2ZB7plxmwaobms4ukPp4MLRfrhj4OODqtFjA73rRjAKa0XIC3nCRhr1ehBL3GODochtbWMHz8ZBqKxnVYZCegyhfLI6fQLp5u8bPYamxOTo8WV0uwE2GgbR0JAKv3C5cJrtssTlJl3jmlso6ZCJwUnIo0lzKmooUxJRTRq&fields=id,name,likes,gender,birthday",
+					"protocol": "https",
+					"host": [
+						"graph",
+						"facebook",
+						"com"
+					],
+					"path": [
+						"me"
+					],
+					"query": [
+						{
+							"key": "access_token",
+							"value": "EAA1BcZCaHv08BAFmCOJGkAAUY8Y11ZCzRHdx4CitEFa6wZCKfcOptw0leZAN33UgopPGwugZAJdW4r7qtRY2ZB7plxmwaobms4ukPp4MLRfrhj4OODqtFjA73rRjAKa0XIC3nCRhr1ehBL3GODochtbWMHz8ZBqKxnVYZCegyhfLI6fQLp5u8bPYamxOTo8WV0uwE2GgbR0JAKv3C5cJrtssTlJl3jmlso6ZCJwUnIo0lzKmooUxJRTRq"
+						},
+						{
+							"key": "fields",
+							"value": "id,name,likes,gender,birthday"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insights",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://graph.facebook.com/v12.0/act_1234567897897/insights?access_token=EAA1BcZCaHv08BAFmCOJGkAAUY8Y11ZCzRHdx4CitEFa6wZCKfcOptw0leZAN33UgopPGwugZAJdW4r7qtRY2ZB7plxmwaobms4ukPp4MLRfrhj4OODqtFjA73rRjAKa0XIC3nCRhr1ehBL3GODochtbWMHz8ZBqKxnVYZCegyhfLI6fQLp5u8bPYamxOTo8WV0uwE2GgbR0JAKv3C5cJrtssTlJl3jmlso6ZCJwUnIo0lzKmooUxJRTRq&client_id=3731141010374479",
+					"protocol": "https",
+					"host": [
+						"graph",
+						"facebook",
+						"com"
+					],
+					"path": [
+						"v12.0",
+						"act_1234567897897",
+						"insights"
+					],
+					"query": [
+						{
+							"key": "access_token",
+							"value": "EAA1BcZCaHv08BAFmCOJGkAAUY8Y11ZCzRHdx4CitEFa6wZCKfcOptw0leZAN33UgopPGwugZAJdW4r7qtRY2ZB7plxmwaobms4ukPp4MLRfrhj4OODqtFjA73rRjAKa0XIC3nCRhr1ehBL3GODochtbWMHz8ZBqKxnVYZCegyhfLI6fQLp5u8bPYamxOTo8WV0uwE2GgbR0JAKv3C5cJrtssTlJl3jmlso6ZCJwUnIo0lzKmooUxJRTRq"
+						},
+						{
+							"key": "client_id",
+							"value": "3731141010374479"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
