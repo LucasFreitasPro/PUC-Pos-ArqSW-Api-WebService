@@ -22,7 +22,7 @@ public class SOAPDemoLocator extends org.apache.axis.client.Service implements o
     }
 
     // Use to get a proxy class for SOAPDemoSoap
-    private java.lang.String SOAPDemoSoap_address = "https://www.crcind.com:443/csp/samples/SOAP.Demo.cls";
+    private java.lang.String SOAPDemoSoap_address = "http://www.crcind.com/csp/samples/SOAP.Demo.cls";
 
     public java.lang.String getSOAPDemoSoapAddress() {
         return SOAPDemoSoap_address;

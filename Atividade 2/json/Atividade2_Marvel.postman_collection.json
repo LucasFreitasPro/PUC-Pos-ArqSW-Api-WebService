@@ -1,0 +1,153 @@
+{
+	"info": {
+		"_postman_id": "a8aa863e-6076-447b-ad23-29bd5f7fbe5d",
+		"name": "Marvel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Comics",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://gateway.marvel.com/v1/public/comics?apikey=0299936633d2d0955358a43628ff662f&hash=425678567bd2f1c8f721ca64f301a68d&ts=2022-02-12T19:45:00Z",
+					"protocol": "http",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"path": [
+						"v1",
+						"public",
+						"comics"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "0299936633d2d0955358a43628ff662f"
+						},
+						{
+							"key": "hash",
+							"value": "425678567bd2f1c8f721ca64f301a68d"
+						},
+						{
+							"key": "ts",
+							"value": "2022-02-12T19:45:00Z"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Creators",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://gateway.marvel.com/v1/public/creators?apikey=0299936633d2d0955358a43628ff662f&hash=425678567bd2f1c8f721ca64f301a68d&ts=2022-02-12T19:45:00Z",
+					"protocol": "http",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"path": [
+						"v1",
+						"public",
+						"creators"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "0299936633d2d0955358a43628ff662f"
+						},
+						{
+							"key": "hash",
+							"value": "425678567bd2f1c8f721ca64f301a68d"
+						},
+						{
+							"key": "ts",
+							"value": "2022-02-12T19:45:00Z"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Characters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://gateway.marvel.com/v1/public/characters?apikey=0299936633d2d0955358a43628ff662f&hash=425678567bd2f1c8f721ca64f301a68d&ts=2022-02-12T19:45:00Z",
+					"protocol": "http",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"path": [
+						"v1",
+						"public",
+						"characters"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "0299936633d2d0955358a43628ff662f"
+						},
+						{
+							"key": "hash",
+							"value": "425678567bd2f1c8f721ca64f301a68d"
+						},
+						{
+							"key": "ts",
+							"value": "2022-02-12T19:45:00Z"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Comic stories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://gateway.marvel.com/v1/public/stories?apikey=0299936633d2d0955358a43628ff662f&hash=425678567bd2f1c8f721ca64f301a68d&ts=2022-02-12T19:45:00Z",
+					"protocol": "http",
+					"host": [
+						"gateway",
+						"marvel",
+						"com"
+					],
+					"path": [
+						"v1",
+						"public",
+						"stories"
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "0299936633d2d0955358a43628ff662f"
+						},
+						{
+							"key": "hash",
+							"value": "425678567bd2f1c8f721ca64f301a68d"
+						},
+						{
+							"key": "ts",
+							"value": "2022-02-12T19:45:00Z"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
