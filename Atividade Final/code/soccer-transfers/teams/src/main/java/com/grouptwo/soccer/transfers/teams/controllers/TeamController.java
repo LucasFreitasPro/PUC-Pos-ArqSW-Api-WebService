@@ -8,10 +8,6 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -106,14 +102,16 @@ public class TeamController {
 	@ApiResponse(responseCode = "200", description = "List of all registered teams", content = @Content)
 	@ApiResponse(responseCode = "404", description = "Team not found", content = @Content)
 	@GetMapping
-	public ResponseEntity<CollectionModel<EntityModel<TeamResponse>>> getAll(@PageableDefault(page = 0, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+	public ResponseEntity<CollectionModel<EntityModel<TeamResponse>>> getAll() {
 		logger.info("get all teams");
-		Page<TeamResponse> page = this.service.findAll(pageable);
-		if (page != null && !page.isEmpty()) {
-			logger.info("list of retrivered teams {}", page.getContent());
-			List<EntityModel<TeamResponse>> teams = page.stream().map(teamResponseModelAssembler::toModel).collect(Collectors.toList());
 
-			return ResponseEntity.status(HttpStatus.OK).body(CollectionModel.of(teams, WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(getClass()).getAll(null)).withSelfRel()));
+		List<TeamResponse> all = this.service.findAll();
+		if (all != null && !all.isEmpty()) {
+			logger.info("list of retrivered teams {}", all.size());
+
+			List<EntityModel<TeamResponse>> teams = all.stream().map(teamResponseModelAssembler::toModel).collect(Collectors.toList());
+
+			return ResponseEntity.status(HttpStatus.OK).body(CollectionModel.of(teams, WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(getClass()).getAll()).withSelfRel()));
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}

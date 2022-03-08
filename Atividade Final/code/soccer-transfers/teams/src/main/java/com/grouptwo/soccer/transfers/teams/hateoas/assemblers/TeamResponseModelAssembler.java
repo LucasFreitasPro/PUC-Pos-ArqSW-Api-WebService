@@ -17,6 +17,6 @@ public class TeamResponseModelAssembler implements RepresentationModelAssembler<
 	public EntityModel<TeamResponse> toModel(TeamResponse teamResponse) {
 		return EntityModel.of(teamResponse,
 				linkTo(methodOn(TeamController.class).getOne(teamResponse.getName())).withSelfRel(),
-				linkTo(methodOn(TeamController.class).getAll(null)).withRel("teams"));
+				linkTo(methodOn(TeamController.class).getAll()).withRel("teams"));
 	}
 }
