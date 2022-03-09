@@ -1,11 +1,36 @@
 package com.grouptwo.soccer.transfers.lib.requests;
 
-import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
-public class PlayerRegistrationRequest extends PlayerDefaultRequest {
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+public class PlayerRegistrationRequest {
+
+	@NotBlank
+	private String name;
+
+	@NotNull
+	private LocalDate birth;
 
 	@NotBlank
 	private String country;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public LocalDate getBirth() {
+		return birth;
+	}
+
+	public void setBirth(LocalDate birth) {
+		this.birth = birth;
+	}
 
 	public String getCountry() {
 		return country;

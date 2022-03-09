@@ -11,10 +11,8 @@ import com.grouptwo.soccer.transfers.teams.models.Player;
 
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
 
-	public final String ALL_PLAYERS = "SELECT p.* FROM player p INNER JOIN team t ON p.team_id = t.team_id WHERE t.name = :teamName";
+	public final String ALL_PLAYERS = "SELECT p.* FROM player p INNER JOIN team t ON p.team_id = t.team_id WHERE NOT t.deleted AND t.name = :teamName";
 	public final String ONE_PLAYER = ALL_PLAYERS + " AND p.name = :playerName";
-
-	public boolean existsByName(String name);
 
 	@Query(value = ALL_PLAYERS, nativeQuery = true)
 	public List<Player> findByTeamName(@Param("teamName") String teamName);

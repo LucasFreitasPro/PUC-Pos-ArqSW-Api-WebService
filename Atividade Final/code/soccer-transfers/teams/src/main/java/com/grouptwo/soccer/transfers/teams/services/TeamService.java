@@ -45,12 +45,12 @@ public class TeamService {
 		return null;
 	}
 
-	public boolean existsByName(String name) {
-		return this.repository.existsByName(name);
-	}
-
 	public TeamResponse findByName(String teamName) {
 		Optional<Team> optional = this.repository.findByName(teamName);
 		return optional.isPresent() ? this.converter.fromEntityToResponse(optional.get()) : null;
+	}
+
+	public Optional<Team> getByName(String teamName) {
+		return this.repository.getByName(teamName);
 	}
 }

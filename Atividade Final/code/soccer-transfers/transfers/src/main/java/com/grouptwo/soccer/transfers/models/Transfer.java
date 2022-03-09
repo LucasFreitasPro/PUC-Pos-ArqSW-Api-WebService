@@ -11,13 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "transfer")
 public class Transfer {
 
-	@JsonIgnore
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
@@ -26,10 +23,10 @@ public class Transfer {
 	private String playerName;
 
 	@Column(nullable = false)
-	private String fromTeam;
+	private String fromTeamName;
 
 	@Column(nullable = false)
-	private String toTeam;
+	private String toTeamName;
 
 	@Column(nullable = false)
 	private LocalDateTime transferredAt;
@@ -53,20 +50,20 @@ public class Transfer {
 		this.playerName = playerName;
 	}
 
-	public String getFromTeam() {
-		return fromTeam;
+	public String getFromTeamName() {
+		return fromTeamName;
 	}
 
-	public void setFromTeam(String fromTeam) {
-		this.fromTeam = fromTeam;
+	public void setFromTeamName(String fromTeamName) {
+		this.fromTeamName = fromTeamName;
 	}
 
-	public String getToTeam() {
-		return toTeam;
+	public String getToTeamName() {
+		return toTeamName;
 	}
 
-	public void setToTeam(String toTeam) {
-		this.toTeam = toTeam;
+	public void setToTeamName(String toTeamName) {
+		this.toTeamName = toTeamName;
 	}
 
 	public LocalDateTime getTransferredAt() {
@@ -87,7 +84,7 @@ public class Transfer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fromTeam, playerName, toTeam);
+		return Objects.hash(fromTeamName, playerName, toTeamName);
 	}
 
 	@Override
@@ -99,6 +96,6 @@ public class Transfer {
 		if (getClass() != obj.getClass())
 			return false;
 		Transfer other = (Transfer) obj;
-		return Objects.equals(fromTeam, other.fromTeam) && Objects.equals(playerName, other.playerName) && Objects.equals(toTeam, other.toTeam);
+		return Objects.equals(fromTeamName, other.fromTeamName) && Objects.equals(playerName, other.playerName) && Objects.equals(toTeamName, other.toTeamName);
 	}
 }

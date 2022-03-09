@@ -13,9 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 @Entity
 @Table(name = "team")
-//@Where(clause = "deleted = 'f'")
+@Where(clause = "deleted = 'f'")
 public class Team {
 
 	@Id
@@ -40,6 +42,10 @@ public class Team {
 
 	public Team() {
 
+	}
+
+	public Team(UUID teamId) {
+		this.teamId = teamId;
 	}
 
 	public Team(Boolean deleted) {

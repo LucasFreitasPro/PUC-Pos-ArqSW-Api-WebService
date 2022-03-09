@@ -3,15 +3,16 @@ package com.grouptwo.soccer.transfers.lib.responses;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class DefaultPlayerResponse {
 
 	@JsonIgnore
 	private UUID playerId;
 
-	@JsonProperty("team-name")
+	@JsonIgnore
 	private String teamName;
+
+	private String name;
 
 	public UUID getPlayerId() {
 		return playerId;
@@ -20,8 +21,6 @@ public abstract class DefaultPlayerResponse {
 	public void setPlayerId(UUID playerId) {
 		this.playerId = playerId;
 	}
-
-	private String name;
 
 	public String getTeamName() {
 		return teamName;

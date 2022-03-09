@@ -1,5 +1,6 @@
 package com.grouptwo.soccer.transfers.lib.requests;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
@@ -8,20 +9,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TransferRequest {
 
 	@JsonProperty("player-name")
-	@NotNull(message = "Player name must not be null")
+	@NotBlank
 	private String playerName;
 
 	@JsonProperty("from-team-name")
-	@NotNull(message = "From Team name must not be null")
-	private String fromTeam;
+	@NotBlank
+	private String fromTeamName;
 
 	@JsonProperty("to-team-name")
-	@NotNull(message = "To Team name must not be null")
-	private String toTeam;
+	@NotBlank
+	private String toTeamName;
 
 	@JsonProperty("transfer-value")
-	@NotNull(message = "Transfer value must not be null")
-	@Positive(message = "Only positive value")
+	@NotNull
+	@Positive
 	private Double transferValue;
 
 	public String getPlayerName() {
@@ -32,20 +33,20 @@ public class TransferRequest {
 		this.playerName = playerName;
 	}
 
-	public String getFromTeam() {
-		return fromTeam;
+	public String getFromTeamName() {
+		return fromTeamName;
 	}
 
-	public void setFromTeam(String fromTeam) {
-		this.fromTeam = fromTeam;
+	public void setFromTeamName(String fromTeamName) {
+		this.fromTeamName = fromTeamName;
 	}
 
-	public String getToTeam() {
-		return toTeam;
+	public String getToTeamName() {
+		return toTeamName;
 	}
 
-	public void setToTeam(String toTeam) {
-		this.toTeam = toTeam;
+	public void setToTeamName(String toTeamName) {
+		this.toTeamName = toTeamName;
 	}
 
 	public Double getTransferValue() {
@@ -58,6 +59,6 @@ public class TransferRequest {
 
 	@Override
 	public String toString() {
-		return "TransferRequest [playerName=" + playerName + ", fromTeam=" + fromTeam + ", toTeam=" + toTeam + ", transferValue=" + transferValue + "]";
+		return "TransferRequest [playerName=" + playerName + ", fromTeamName=" + fromTeamName + ", toTeamName=" + toTeamName + ", transferValue=" + transferValue + "]";
 	}
 }

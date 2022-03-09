@@ -1,6 +1,7 @@
 package com.grouptwo.soccer.transfers.teams.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -32,16 +33,8 @@ public class PlayerService {
 		return this.repository.save(newPlayer);
 	}
 
-//	public Optional<Player> findById(UUID id) {
-//		return this.repository.findById(id);
-//	}
-
-	public boolean existsByName(String name) {
-		return this.repository.existsByName(name);
-	}
-
-	public void delete(Player player) {
-		this.repository.delete(player);
+	public void deleteById(UUID playerId) {
+		this.repository.deleteById(playerId);
 	}
 
 	public List<PlayerResponse> findByTeamName(String teamName) {
@@ -52,7 +45,8 @@ public class PlayerService {
 		return this.repository.getByTeamNameAndPlayerName(teamName, playerName);
 	}
 
-	public Player findByName(String name) {
-		return this.repository.findByName(name);
+	public PlayerResponse findByName(String name) {
+		Player player = this.repository.findByName(name);
+		return player == null ? null : this.converter.fromEntityToResponse(player);
 	}
 }

@@ -1,0 +1,39 @@
+from_team_id		player_id to_team_id
+{
+    "playerId" : "1006959f-19ca-4123-884a-45cc0157f73d",
+    "fromTeamId" : "fcf6f119-769c-479a-a775-4b5e0b9570ff",
+    "toTeamId" : "c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c",
+    "transferValue" : 100.0
+}
+{
+    "player-id" : "0f10c55b-b49e-4782-b897-6e2b667bdf2f",
+    "from-team-id" : "fcf6f119-769c-479a-a775-4b5e0b9570ff",
+    "to-team-id" : "c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c",
+    "transfer-value" : 150.0
+}
+
+{
+    "player-id" : "ec2c8240-2875-4950-8f96-eb95f42eb62d",
+    "from-team-id" : "c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c",
+    "to-team-id" : "502baa58-aa9e-431d-8709-bda463e47eb6",
+    "transfer-value" : 300.0
+}
+{
+    "player-id" : "754eac3a-94f2-4f87-afa5-081248f22307",
+    "from-team-id" : "c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c",
+    "to-team-id" : "502baa58-aa9e-431d-8709-bda463e47eb6",
+    "transfer-value" : 500.0
+}
+
+{
+    "playerId" : "9604f10d-993c-422b-90ed-4cf7825a866c",
+    "fromTeamId" : "8bb5f134-bf2f-4f6a-b45c-342518d25e7c",
+    "toTeamId" : "c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c",
+    "transferValue" : 400.0
+}
+{
+    "playerId" : "e148dbd3-5b3f-4ed6-a089-7381f013f8f6",
+    "fromTeamId" : "8bb5f134-bf2f-4f6a-b45c-342518d25e7c",
+    "toTeamId" : "c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c",
+    "transferValue" : 800.0
+}

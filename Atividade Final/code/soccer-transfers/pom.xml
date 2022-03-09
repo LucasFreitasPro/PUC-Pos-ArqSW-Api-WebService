@@ -27,7 +27,6 @@
 		<module>transfers</module>
 		<module>soccer-transfers-lib</module>
 		<module>eureka-server</module>
-		<module>email</module>
 	</modules>
 
 	<dependencyManagement>

@@ -1,22 +1,25 @@
 package com.grouptwo.soccer.transfers.lib.requests;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PlayerUpdateRequest extends PlayerDefaultRequest {
+public class PlayerUpdateRequest {
 
-	@JsonProperty("team-name")
-	private String teamName;
+	@JsonProperty("new-name")
+	@NotBlank
+	private String newName;
 
-	public String getTeamName() {
-		return teamName;
+	public String getNewName() {
+		return newName;
 	}
 
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
+	public void setNewName(String newName) {
+		this.newName = newName;
 	}
 
 	@Override
 	public String toString() {
-		return "PlayerUpdateRequest [teamName=" + teamName + ", " + super.toString() + "]";
+		return "PlayerUpdateRequest [newName=" + newName + "]";
 	}
 }

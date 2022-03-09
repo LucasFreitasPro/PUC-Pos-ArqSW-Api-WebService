@@ -1,0 +1,11 @@
+/teams
+getAll
+register OK e CONFLICT
+
+/teams/{id}/players
+getAll
+register OK e CONFLICT
+register NOT FOUND
+
+/transfers
+6 transfers
