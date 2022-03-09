@@ -1,0 +1,158 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/v1/transfers:
+    post:
+      tags:
+      - transfer-controller
+      summary: Transfer a player to another team
+      operationId: transferPlayer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+        required: true
+      responses:
+        "409":
+          description: "Origin team does not exist \t\n Destiny team does not exist\
+            \ \t\n Player does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "201":
+          description: Player successfully transferred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+  /api/v1/transfers/to-team/{teamName}:
+    get:
+      tags:
+      - transfer-controller
+      summary: Get all transfers to a team
+      operationId: getAllToTeam
+      parameters:
+      - name: teamName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Transfers found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+        "404":
+          description: No transfers found
+  /api/v1/transfers/from-team/{teamName}:
+    get:
+      tags:
+      - transfer-controller
+      summary: Get all transfers from a team
+      operationId: getAllFromTeam
+      parameters:
+      - name: teamName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Transfers found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+        "404":
+          description: No transfer found
+  /api/v1/transfers/from-player/{playerName}:
+    get:
+      tags:
+      - transfer-controller
+      summary: Get all player transfers
+      operationId: getAllPlayerTransfers
+      parameters:
+      - name: playerName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Transfers found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+        "404":
+          description: No transfers found
+components:
+  schemas:
+    TransferRequest:
+      required:
+      - from-team-name
+      - player-name
+      - to-team-name
+      - transfer-value
+      type: object
+      properties:
+        player-name:
+          type: string
+        from-team-name:
+          type: string
+        to-team-name:
+          type: string
+        transfer-value:
+          type: number
+          format: double
+    ConflictResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        resource:
+          type: object
+    BadRequestResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationResult'
+    ValidationResult:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    TransferResponse:
+      type: object
+      properties:
+        player-name:
+          type: string
+        from-team-name:
+          type: string
+        to-team-name:
+          type: string
+        transferred-at:
+          type: string
+          format: date-time
+        transfer-value:
+          type: number
+          format: double
