@@ -16,7 +16,7 @@ public class TeamRegistrationResponseModelAssembler implements RepresentationMod
 	@Override
 	public EntityModel<TeamRegistrationResponse> toModel(TeamRegistrationResponse teamRegistrationResponse) {
 		return EntityModel.of(teamRegistrationResponse,
-				linkTo(methodOn(TeamController.class).getOne(teamRegistrationResponse.getName())).withSelfRel(),
+				linkTo(methodOn(TeamController.class).getOne(teamRegistrationResponse.getTeamId())).withSelfRel(),
 				linkTo(methodOn(TeamController.class).getAll()).withRel("teams"));
 	}
 }

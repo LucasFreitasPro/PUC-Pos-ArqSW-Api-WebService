@@ -33,56 +33,58 @@ paths:
               $ref: '#/components/schemas/TeamRegistrationRequest'
         required: true
       responses:
-        "409":
-          description: Team is already registered
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConflictResponse'
-        "400":
-          description: Invalid payload
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestResponse'
         "201":
           description: Team registered successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TeamRegistrationResponse'
-  /api/v1/teams/{teamName}/players:
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "409":
+          description: Team is already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/teams/{teamId}/players:
     get:
       tags:
       - player-controller
       summary: Get registered players from a team
       operationId: getAll_1
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
+        "404":
+          description: No players found
         "200":
           description: All registered players from a team
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlayerResponse'
-        "404":
-          description: No players found
     post:
       tags:
       - player-controller
       summary: Register a new player in a team
       operationId: register_1
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       requestBody:
         content:
           application/json:
@@ -97,30 +99,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConflictResponse'
-        "201":
-          description: Player registered successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlayerRegistrationResponse'
         "400":
           description: Invalid payload
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
-  /api/v1/teams/{teamName}:
+        "201":
+          description: Player registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerRegistrationResponse'
+  /api/v1/teams/{teamId}:
     get:
       tags:
       - team-controller
-      summary: Get a team by its name
+      summary: Get a team by its id
       operationId: getOne
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
         "404":
           description: Team not found
@@ -133,34 +136,30 @@ paths:
     delete:
       tags:
       - team-controller
-      summary: Delete a team by its name
+      summary: Delete a team by its id
       operationId: deleteOne
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
-        "409":
-          description: The provided team does not exist
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConflictResponse'
         "204":
           description: Team deleted successfully
     patch:
       tags:
       - team-controller
-      summary: Update a team by its name
+      summary: Update a team by its id
       operationId: updateOne
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       requestBody:
         content:
           application/json:
@@ -168,6 +167,14 @@ paths:
               $ref: '#/components/schemas/TeamUpdateRequest'
         required: true
       responses:
+        "200":
+          description: Team updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamResponse'
+        "400":
+          description: Invalid payload
         "409":
           description: "The provided name is already in use on another team \t\n The\
             \ provided team does not exist"
@@ -175,31 +182,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConflictResponse'
-        "400":
-          description: Invalid payload
-        "200":
-          description: Team updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TeamResponse'
-  /api/v1/teams/{teamName}/players/{playerName}:
+  /api/v1/teams/{teamId}/players/{playerId}:
     get:
       tags:
       - player-controller
-      summary: Get a player by its name and team
+      summary: Get a player by its id and team id
       operationId: getOne_1
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
-      - name: playerName
+          format: uuid
+      - name: playerId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
         "404":
           description: Player not found
@@ -212,45 +213,42 @@ paths:
     delete:
       tags:
       - player-controller
-      summary: Delete a player by its name and team
+      summary: Delete a player by its id and team id
       operationId: deleteOne_1
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
-      - name: playerName
+          format: uuid
+      - name: playerId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
         "204":
           description: Player deleted successfully
-        "409":
-          description: "The provided player does not exist \t\n The provided team\
-            \ does not exist"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConflictResponse'
     patch:
       tags:
       - player-controller
-      summary: Update a player by its name and team
+      summary: Update a player by its id and team id
       operationId: updateOne_1
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
-      - name: playerName
+          format: uuid
+      - name: playerId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       requestBody:
         content:
           application/json:
@@ -258,6 +256,12 @@ paths:
               $ref: '#/components/schemas/PlayerUpdateRequest'
         required: true
       responses:
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
         "409":
           description: "The provided name is already in use by another player \t\n\
             \ The provided player does not exist \t\n The provided team does not exist"
@@ -271,29 +275,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlayerResponse'
-        "400":
-          description: Invalid payload
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestResponse'
-  /api/v1/teams/{teamName}/players/{playerName}/transfer:
+  /api/v1/teams/{teamId}/players/{playerId}/transfer:
     patch:
       tags:
       - player-controller
       summary: Transfer a player to another team
       operationId: updateTeam
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
-      - name: playerName
+          format: uuid
+      - name: playerId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       requestBody:
         content:
           application/json:
@@ -301,18 +301,18 @@ paths:
               $ref: '#/components/schemas/PlayerUpdateTeamRequest'
         required: true
       responses:
-        "200":
-          description: Player updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlayerResponse'
         "400":
           description: Invalid payload
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+        "200":
+          description: Player updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
         "409":
           description: "The provided player does not exist \t\n The provided team\
             \ does not exist \t\n The provided new team does not exist"
@@ -337,13 +337,18 @@ components:
           type: string
         country:
           type: string
-    ConflictResponse:
+    TeamRegistrationResponse:
       type: object
       properties:
-        message:
+        team-id:
           type: string
-        resource:
-          type: object
+          format: uuid
+        name:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
     BadRequestResponse:
       type: object
       properties:
@@ -358,15 +363,13 @@ components:
           type: string
         message:
           type: string
-    TeamRegistrationResponse:
+    ConflictResponse:
       type: object
       properties:
-        name:
+        message:
           type: string
-        state:
-          type: string
-        country:
-          type: string
+        resource:
+          type: object
     PlayerRegistrationRequest:
       required:
       - birth
@@ -384,6 +387,12 @@ components:
     PlayerRegistrationResponse:
       type: object
       properties:
+        player-id:
+          type: string
+          format: uuid
+        team-id:
+          type: string
+          format: uuid
         name:
           type: string
         birth:
@@ -417,6 +426,12 @@ components:
     EntityModelPlayerResponse:
       type: object
       properties:
+        player-id:
+          type: string
+          format: uuid
+        team-id:
+          type: string
+          format: uuid
         name:
           type: string
         birth:
@@ -452,6 +467,12 @@ components:
     PlayerResponse:
       type: object
       properties:
+        player-id:
+          type: string
+          format: uuid
+        team-id:
+          type: string
+          format: uuid
         name:
           type: string
         birth:
@@ -462,6 +483,9 @@ components:
     TeamResponse:
       type: object
       properties:
+        team-id:
+          type: string
+          format: uuid
         name:
           type: string
         state:
@@ -479,8 +503,9 @@ components:
           type: string
     PlayerUpdateTeamRequest:
       required:
-      - new-team-name
+      - new-team-id
       type: object
       properties:
-        new-team-name:
+        new-team-id:
           type: string
+          format: uuid

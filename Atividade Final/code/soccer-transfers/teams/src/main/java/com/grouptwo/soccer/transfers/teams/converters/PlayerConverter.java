@@ -13,7 +13,7 @@ public class PlayerConverter {
 	public PlayerResponse fromEntityToResponse(Player entity) {
 		PlayerResponse response = new PlayerResponse();
 		BeanUtils.copyProperties(entity, response);
-		response.setTeamName(entity.getTeam().getName());
+		response.setTeamId(entity.getTeam().getTeamId());
 		return response;
 	}
 

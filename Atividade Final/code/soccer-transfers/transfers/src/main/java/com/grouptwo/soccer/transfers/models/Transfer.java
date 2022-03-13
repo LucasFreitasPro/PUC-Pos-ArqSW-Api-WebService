@@ -20,13 +20,13 @@ public class Transfer {
 	private UUID id;
 
 	@Column(nullable = false)
-	private String playerName;
+	private UUID playerId;
 
 	@Column(nullable = false)
-	private String fromTeamName;
+	private UUID originTeamId;
 
 	@Column(nullable = false)
-	private String toTeamName;
+	private UUID destinyTeamId;
 
 	@Column(nullable = false)
 	private LocalDateTime transferredAt;
@@ -42,28 +42,28 @@ public class Transfer {
 		this.id = id;
 	}
 
-	public String getPlayerName() {
-		return playerName;
+	public UUID getPlayerId() {
+		return playerId;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setPlayerId(UUID playerId) {
+		this.playerId = playerId;
 	}
 
-	public String getFromTeamName() {
-		return fromTeamName;
+	public UUID getOriginTeamId() {
+		return originTeamId;
 	}
 
-	public void setFromTeamName(String fromTeamName) {
-		this.fromTeamName = fromTeamName;
+	public void setOriginTeamId(UUID originTeamId) {
+		this.originTeamId = originTeamId;
 	}
 
-	public String getToTeamName() {
-		return toTeamName;
+	public UUID getDestinyTeamId() {
+		return destinyTeamId;
 	}
 
-	public void setToTeamName(String toTeamName) {
-		this.toTeamName = toTeamName;
+	public void setDestinyTeamId(UUID destinyTeamId) {
+		this.destinyTeamId = destinyTeamId;
 	}
 
 	public LocalDateTime getTransferredAt() {
@@ -84,7 +84,7 @@ public class Transfer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fromTeamName, playerName, toTeamName);
+		return Objects.hash(destinyTeamId, originTeamId, playerId);
 	}
 
 	@Override
@@ -96,6 +96,6 @@ public class Transfer {
 		if (getClass() != obj.getClass())
 			return false;
 		Transfer other = (Transfer) obj;
-		return Objects.equals(fromTeamName, other.fromTeamName) && Objects.equals(playerName, other.playerName) && Objects.equals(toTeamName, other.toTeamName);
+		return Objects.equals(destinyTeamId, other.destinyTeamId) && Objects.equals(originTeamId, other.originTeamId) && Objects.equals(playerId, other.playerId);
 	}
 }

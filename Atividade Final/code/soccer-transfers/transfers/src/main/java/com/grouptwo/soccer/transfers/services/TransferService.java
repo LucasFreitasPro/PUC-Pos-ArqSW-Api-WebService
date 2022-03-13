@@ -1,6 +1,7 @@
 package com.grouptwo.soccer.transfers.services;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +31,15 @@ public class TransferService {
 		this.repository.save(newTransfer);
 	}
 
-	public List<Transfer> findByFromTeamName(String teamName) {
-		return this.repository.findByFromTeamName(teamName);
+	public List<Transfer> findByOriginTeamId(UUID originTeamId) {
+		return this.repository.findByOriginTeamId(originTeamId);
 	}
 
-	public List<Transfer> findByToTeamName(String teamName) {
-		return this.repository.findByToTeamName(teamName);
+	public List<Transfer> findByDestinyTeamId(UUID destinyTeamId) {
+		return this.repository.findByDestinyTeamId(destinyTeamId);
 	}
 
-	public List<Transfer> findByPlayerName(String playerName) {
-		return this.repository.findByPlayerName(playerName);
+	public List<Transfer> findByPlayerId(UUID playerId) {
+		return this.repository.findByPlayerId(playerId);
 	}
 }

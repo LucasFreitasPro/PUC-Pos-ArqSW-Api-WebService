@@ -1,20 +1,26 @@
 package com.grouptwo.soccer.transfers.lib.requests;
 
-import javax.validation.constraints.NotBlank;
+import java.util.UUID;
+
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PlayerUpdateTeamRequest {
 
-	@JsonProperty("new-team-name")
-	@NotBlank
-	private String newTeamName;
+	@JsonProperty("new-team-id")
+	@NotNull
+	private UUID newTeamId;
 
-	public String getNewTeamName() {
-		return newTeamName;
+	public PlayerUpdateTeamRequest() {
+
 	}
 
-	public void setNewTeamName(String newTeamName) {
-		this.newTeamName = newTeamName;
+	public PlayerUpdateTeamRequest(UUID newTeamId) {
+		this.newTeamId = newTeamId;
+	}
+
+	public UUID getNewTeamId() {
+		return newTeamId;
 	}
 }

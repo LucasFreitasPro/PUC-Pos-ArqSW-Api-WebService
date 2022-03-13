@@ -16,7 +16,7 @@ public class PlayerResponseModelAssembler implements RepresentationModelAssemble
 	@Override
 	public EntityModel<PlayerResponse> toModel(PlayerResponse playerResponse) {
 		return EntityModel.of(playerResponse,
-				linkTo(methodOn(PlayerController.class).getOne(playerResponse.getTeamName(), playerResponse.getName())).withSelfRel(),
-				linkTo(methodOn(PlayerController.class).getAll(playerResponse.getTeamName())).withRel("players"));
+				linkTo(methodOn(PlayerController.class).getOne(playerResponse.getTeamId(), playerResponse.getPlayerId())).withSelfRel(),
+				linkTo(methodOn(PlayerController.class).getAll(playerResponse.getTeamId())).withRel("players"));
 	}
 }

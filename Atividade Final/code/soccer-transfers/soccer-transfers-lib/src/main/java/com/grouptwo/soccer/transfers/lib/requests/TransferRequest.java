@@ -1,6 +1,7 @@
 package com.grouptwo.soccer.transfers.lib.requests;
 
-import javax.validation.constraints.NotBlank;
+import java.util.UUID;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
@@ -8,45 +9,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TransferRequest {
 
-	@JsonProperty("player-name")
-	@NotBlank
-	private String playerName;
+	@JsonProperty("player-id")
+	@NotNull
+	private UUID playerId;
 
-	@JsonProperty("from-team-name")
-	@NotBlank
-	private String fromTeamName;
+	@JsonProperty("origin-team-id")
+	@NotNull
+	private UUID originTeamId;
 
-	@JsonProperty("to-team-name")
-	@NotBlank
-	private String toTeamName;
+	@JsonProperty("destiny-team-id")
+	@NotNull
+	private UUID destinyTeamId;
 
 	@JsonProperty("transfer-value")
 	@NotNull
 	@Positive
 	private Double transferValue;
 
-	public String getPlayerName() {
-		return playerName;
+	public UUID getPlayerId() {
+		return playerId;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setPlayerId(UUID playerId) {
+		this.playerId = playerId;
 	}
 
-	public String getFromTeamName() {
-		return fromTeamName;
+	public UUID getOriginTeamId() {
+		return originTeamId;
 	}
 
-	public void setFromTeamName(String fromTeamName) {
-		this.fromTeamName = fromTeamName;
+	public void setOriginTeamId(UUID originTeamId) {
+		this.originTeamId = originTeamId;
 	}
 
-	public String getToTeamName() {
-		return toTeamName;
+	public UUID getDestinyTeamId() {
+		return destinyTeamId;
 	}
 
-	public void setToTeamName(String toTeamName) {
-		this.toTeamName = toTeamName;
+	public void setDestinyTeamId(UUID destinyTeamId) {
+		this.destinyTeamId = destinyTeamId;
 	}
 
 	public Double getTransferValue() {
@@ -59,6 +60,6 @@ public class TransferRequest {
 
 	@Override
 	public String toString() {
-		return "TransferRequest [playerName=" + playerName + ", fromTeamName=" + fromTeamName + ", toTeamName=" + toTeamName + ", transferValue=" + transferValue + "]";
+		return "TransferRequest [playerId=" + playerId + ", originTeamId=" + originTeamId + ", destinyTeamId=" + destinyTeamId + ", transferValue=" + transferValue + "]";
 	}
 }

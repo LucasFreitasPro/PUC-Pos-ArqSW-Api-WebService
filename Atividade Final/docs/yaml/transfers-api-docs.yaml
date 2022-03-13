@@ -26,97 +26,103 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConflictResponse'
-        "400":
-          description: Invalid payload
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestResponse'
         "201":
           description: Player successfully transferred
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferResponse'
-  /api/v1/transfers/to-team/{teamName}:
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /api/v1/transfers/to-team/{teamId}:
     get:
       tags:
       - transfer-controller
       summary: Get all transfers to a team
       operationId: getAllToTeam
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
+        "404":
+          description: No transfers found
         "200":
           description: Transfers found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferResponse'
-        "404":
-          description: No transfers found
-  /api/v1/transfers/from-team/{teamName}:
+  /api/v1/transfers/from-team/{teamId}:
     get:
       tags:
       - transfer-controller
       summary: Get all transfers from a team
       operationId: getAllFromTeam
       parameters:
-      - name: teamName
+      - name: teamId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
+        "404":
+          description: No transfer found
         "200":
           description: Transfers found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferResponse'
-        "404":
-          description: No transfer found
-  /api/v1/transfers/from-player/{playerName}:
+  /api/v1/transfers/from-player/{playerId}:
     get:
       tags:
       - transfer-controller
       summary: Get all player transfers
       operationId: getAllPlayerTransfers
       parameters:
-      - name: playerName
+      - name: playerId
         in: path
         required: true
         schema:
           type: string
+          format: uuid
       responses:
+        "404":
+          description: No transfers found
         "200":
           description: Transfers found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferResponse'
-        "404":
-          description: No transfers found
 components:
   schemas:
     TransferRequest:
       required:
-      - from-team-name
-      - player-name
-      - to-team-name
+      - destiny-team-id
+      - origin-team-id
+      - player-id
       - transfer-value
       type: object
       properties:
-        player-name:
+        player-id:
           type: string
-        from-team-name:
+          format: uuid
+        origin-team-id:
           type: string
-        to-team-name:
+          format: uuid
+        destiny-team-id:
           type: string
+          format: uuid
         transfer-value:
           type: number
           format: double
@@ -127,6 +133,24 @@ components:
           type: string
         resource:
           type: object
+    TransferResponse:
+      type: object
+      properties:
+        player-id:
+          type: string
+          format: uuid
+        origin-team-id:
+          type: string
+          format: uuid
+        destiny-team-id:
+          type: string
+          format: uuid
+        transferred-at:
+          type: string
+          format: date-time
+        transfer-value:
+          type: number
+          format: double
     BadRequestResponse:
       type: object
       properties:
@@ -141,18 +165,3 @@ components:
           type: string
         message:
           type: string
-    TransferResponse:
-      type: object
-      properties:
-        player-name:
-          type: string
-        from-team-name:
-          type: string
-        to-team-name:
-          type: string
-        transferred-at:
-          type: string
-          format: date-time
-        transfer-value:
-          type: number
-          format: double

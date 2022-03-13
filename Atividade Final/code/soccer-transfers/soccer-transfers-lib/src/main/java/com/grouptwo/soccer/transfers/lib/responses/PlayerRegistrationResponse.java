@@ -1,7 +1,11 @@
 package com.grouptwo.soccer.transfers.lib.responses;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder(value = {"playerId", "teamId", "name", "birth", "country"})
 public class PlayerRegistrationResponse extends DefaultPlayerResponse {
 
 	private LocalDate birth;
@@ -12,9 +16,9 @@ public class PlayerRegistrationResponse extends DefaultPlayerResponse {
 
 	}
 
-	public PlayerRegistrationResponse(String teamName, String name) {
-		setTeamName(teamName);
-		setName(name);
+	public PlayerRegistrationResponse(UUID teamId, UUID playerId) {
+		setTeamId(teamId);
+		setPlayerId(playerId);
 	}
 
 	public LocalDate getBirth() {

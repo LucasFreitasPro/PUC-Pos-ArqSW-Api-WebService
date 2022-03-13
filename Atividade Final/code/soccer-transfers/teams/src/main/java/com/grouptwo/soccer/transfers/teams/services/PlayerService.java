@@ -1,6 +1,7 @@
 package com.grouptwo.soccer.transfers.teams.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,16 +38,21 @@ public class PlayerService {
 		this.repository.deleteById(playerId);
 	}
 
-	public List<PlayerResponse> findByTeamName(String teamName) {
-		return this.repository.findByTeamName(teamName).stream().map(p -> this.converter.fromEntityToResponse(p)).collect(Collectors.toList());
+	public List<PlayerResponse> findByTeamId(UUID teamId) {
+		return this.repository.findByTeamId(teamId).stream().map(p -> this.converter.fromEntityToResponse(p)).collect(Collectors.toList());
 	}
 
-	public Player getByTeamNameAndPlayerName(String teamName, String playerName) {
-		return this.repository.getByTeamNameAndPlayerName(teamName, playerName);
+	public Player getByTeamIdAndPlayerId(UUID teamId, UUID playerId) {
+		return this.repository.getByTeamIdAndPlayerId(teamId, playerId);
 	}
 
-	public PlayerResponse findByName(String name) {
-		Player player = this.repository.findByName(name);
-		return player == null ? null : this.converter.fromEntityToResponse(player);
+	public PlayerResponse findById(UUID playerId) {
+		Optional<Player> player = this.repository.findById(playerId);
+		return !player.isPresent() ? null : this.converter.fromEntityToResponse(player.get());
+	}
+
+	public PlayerResponse findByName(String playerName) {
+		Optional<Player> player = this.repository.findByName(playerName);
+		return !player.isPresent() ? null : this.converter.fromEntityToResponse(player.get());
 	}
 }
