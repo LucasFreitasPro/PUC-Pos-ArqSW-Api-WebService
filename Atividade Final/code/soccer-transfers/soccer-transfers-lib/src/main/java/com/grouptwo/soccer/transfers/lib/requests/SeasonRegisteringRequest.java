@@ -1,10 +1,10 @@
 package com.grouptwo.soccer.transfers.lib.requests;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class SeasonRegisteringRequest {
 
-	@NotBlank
+	@NotNull
 	private Short year;
 
 	public Short getYear() {
