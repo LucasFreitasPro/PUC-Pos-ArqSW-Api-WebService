@@ -2,6 +2,7 @@ package com.grouptwo.soccer.transfers.teams.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -47,6 +48,11 @@ public class TeamService {
 
 	public TeamResponse findByName(String teamName) {
 		Optional<Team> optional = this.repository.findByName(teamName);
+		return optional.isPresent() ? this.converter.fromEntityToResponse(optional.get()) : null;
+	}
+
+	public TeamResponse findById(UUID teamId) {
+		Optional<Team> optional = this.repository.findById(teamId);
 		return optional.isPresent() ? this.converter.fromEntityToResponse(optional.get()) : null;
 	}
 

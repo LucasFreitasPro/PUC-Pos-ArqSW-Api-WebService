@@ -14,9 +14,9 @@ public class TransferResponseModelAssembler implements RepresentationModelAssemb
 	@Override
 	public EntityModel<TransferResponse> toModel(TransferResponse entity) {
 		return EntityModel.of(entity,
-					WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(TransferController.class).getAllFromTeam(entity.getFromTeamName())).withRel("get all transfers from origin team"),
-					WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(TransferController.class).getAllToTeam(entity.getToTeamName())).withRel("get all transfers from destiny team"),
-					WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(TransferController.class).getAllPlayerTransfers(entity.getPlayerName())).withRel("get all player transfers")
+					WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(TransferController.class).getAllFromTeam(entity.getOriginTeamId())).withRel("get all transfers from origin team"),
+					WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(TransferController.class).getAllToTeam(entity.getDestinyTeamId())).withRel("get all transfers from destiny team"),
+					WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(TransferController.class).getAllPlayerTransfers(entity.getPlayerId())).withRel("get all player transfers")
 				);
 	}
 }

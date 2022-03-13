@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -33,6 +34,7 @@ import com.grouptwo.soccer.transfers.lib.responses.ConflictResponse;
 import com.grouptwo.soccer.transfers.lib.responses.PlayerRegistrationResponse;
 import com.grouptwo.soccer.transfers.lib.responses.PlayerResponse;
 import com.grouptwo.soccer.transfers.lib.responses.TeamResponse;
+import com.grouptwo.soccer.transfers.lib.utils.CommonUtil;
 import com.grouptwo.soccer.transfers.teams.hateoas.assemblers.PlayerRegistrationResponseModelAssembler;
 import com.grouptwo.soccer.transfers.teams.hateoas.assemblers.PlayerResponseModelAssembler;
 import com.grouptwo.soccer.transfers.teams.models.Player;
@@ -46,7 +48,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
-@RequestMapping(path = "/api/v1/teams/{teamName}/players")
+@RequestMapping(path = "/api/v1/teams/{teamId}/players")
 public class PlayerController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -69,25 +71,23 @@ public class PlayerController {
 	}
 
 	@Operation(summary = "Register a new player in a team")
-	@ApiResponse(responseCode = "201", description = "Player registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerRegistrationResponse.class)))
-	@ApiResponse(responseCode = "400", description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
-	@ApiResponse(responseCode = "409", description = "Player already registered \t\n The provided team does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Player registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerRegistrationResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "Player already registered \t\n The provided team does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@PostMapping
-	public ResponseEntity<Object> register(@PathVariable("teamName") String teamName, @RequestBody @Valid PlayerRegistrationRequest playerRegistrationRequest, BindingResult bindingResult) {
+	public ResponseEntity<Object> register(@PathVariable("teamId") UUID teamId, @RequestBody @Valid PlayerRegistrationRequest playerRegistrationRequest, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			final BadRequestResponse badRequestResponse = new BadRequestResponse();
 			bindingResult.getFieldErrors().stream().forEach(e -> badRequestResponse.addError(e.getField(), e.getDefaultMessage()));
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
 		}
 
-		teamName = teamName.toUpperCase();
-
 		logger.info("new player registration {}", playerRegistrationRequest);
 
 		playerRegistrationRequest.setName(playerRegistrationRequest.getName().toUpperCase());
 		playerRegistrationRequest.setCountry(playerRegistrationRequest.getCountry().toUpperCase());
 
-		TeamResponse teamResponse = this.teamService.findByName(teamName);
+		TeamResponse teamResponse = this.teamService.findById(teamId);
 		if (teamResponse != null) {
 			PlayerResponse playerResponse = this.playerService.findByName(playerRegistrationRequest.getName());
 			if (playerResponse != null) {
@@ -99,7 +99,8 @@ public class PlayerController {
 				player.setTeam(this.teamService.getConverter().fromResponseToEntity(teamResponse));
 				player = this.playerService.save(player);
 
-				PlayerRegistrationResponse playerRegistrationResponse = new PlayerRegistrationResponse(teamName, player.getName());
+				PlayerRegistrationResponse playerRegistrationResponse = new PlayerRegistrationResponse(teamId, player.getPlayerId());
+				playerRegistrationResponse.setName(player.getName());
 				playerRegistrationResponse.setBirth(playerRegistrationRequest.getBirth());
 				playerRegistrationResponse.setCountry(playerRegistrationRequest.getCountry());
 				logger.info("Player registered successfully {}", playerRegistrationResponse);
@@ -107,60 +108,58 @@ public class PlayerController {
 				return ResponseEntity.status(HttpStatus.CREATED).body(playerRegistrationResponseModelAssembler.toModel(playerRegistrationResponse));
 			}
 		} else {
-			logger.warn("The provided team does not exist. Team {}", teamName);
+			logger.warn("The provided team does not exist. Team {}", teamId);
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<TeamResponse>("The provided team does not exist"));
 		}
 	}
 
 	@Operation(summary = "Get registered players from a team")
-	@ApiResponse(responseCode = "200", description = "All registered players from a team", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
-	@ApiResponse(responseCode = "404", description = "No players found", content = @Content)
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_OK, description = "All registered players from a team", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_NOT_FOUND, description = "No players found", content = @Content)
 	@GetMapping
-	public ResponseEntity<CollectionModel<EntityModel<PlayerResponse>>> getAll(@PathVariable("teamName") String teamName) {
-		logger.info("get all players from team: {}", teamName);
+	public ResponseEntity<CollectionModel<EntityModel<PlayerResponse>>> getAll(@PathVariable("teamId") UUID teamId) {
+		logger.info("get all players from team: {}", teamId);
 
-		List<PlayerResponse> players = this.playerService.findByTeamName(teamName.toUpperCase());
+		List<PlayerResponse> players = this.playerService.findByTeamId(teamId);
 
 		logger.info("list of retrivered players {}", players);
 
 		if (players != null && !players.isEmpty()) {
-			players.stream().forEach(p -> p.setTeamName(teamName.toUpperCase()));
-
 			List<EntityModel<PlayerResponse>> list = players.stream().map(playerResponseModelAssembler::toModel).collect(Collectors.toList());
 
-			return ResponseEntity.status(HttpStatus.OK).body(CollectionModel.of(list, linkTo(methodOn(PlayerController.class).getAll(teamName)).withSelfRel()));
+			return ResponseEntity.status(HttpStatus.OK).body(CollectionModel.of(list, linkTo(methodOn(PlayerController.class).getAll(teamId)).withSelfRel()));
 		}
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
 
-	@Operation(summary = "Get a player by its name and team")
-	@ApiResponse(responseCode = "200", description = "A player from a team", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
-	@ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
-	@GetMapping(path = "/{playerName}")
-	public ResponseEntity<EntityModel<PlayerResponse>> getOne(@PathVariable("teamName") String teamName, @PathVariable("playerName") String playerName) {
-		logger.info("get player {} from team {} ", playerName, teamName);
+	@Operation(summary = "Get a player by its id and team id")
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_OK, description = "A player from a team", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_NOT_FOUND, description = "Player not found", content = @Content)
+	@GetMapping(path = "/{playerId}")
+	public ResponseEntity<EntityModel<PlayerResponse>> getOne(@PathVariable("teamId") UUID teamId, @PathVariable("playerId") UUID playerId) {
+		logger.info("get player {} from team {} ", playerId, teamId);
 
-		Player player = this.playerService.getByTeamNameAndPlayerName(teamName.toUpperCase(), playerName);
+		Player player = this.playerService.getByTeamIdAndPlayerId(teamId, playerId);
 		if (player != null) {
 			PlayerResponse playerResponse = new PlayerResponse();
 			BeanUtils.copyProperties(player, playerResponse);
-			playerResponse.setTeamName(player.getTeam().getName());
+			playerResponse.setTeamId(player.getTeam().getTeamId());
 
 			logger.info("retrivered player {}", playerResponse);
 			return ResponseEntity.status(HttpStatus.OK).body(this.playerResponseModelAssembler.toModel(playerResponse));
 		} else {
-			logger.warn("Player not found. Team {} Player {}", teamName, playerName);
+			logger.warn("Player not found. Team {} Player {}", teamId, playerId);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 	}
 
-	@Operation(summary = "Update a player by its name and team")
-	@ApiResponse(responseCode = "200", description = "Player updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
-	@ApiResponse(responseCode = "400", description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
-	@ApiResponse(responseCode = "409", description = "The provided name is already in use by another player \t\n The provided player does not exist \t\n The provided team does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
-	@PatchMapping(path = "/{playerName}")
-	public ResponseEntity<Object> updateOne(@PathVariable("teamName") String teamName, @PathVariable("playerName") String playerName, @RequestBody @Valid PlayerUpdateRequest playerUpdateRequest,
+	@Operation(summary = "Update a player by its id and team id")
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_OK, description = "Player updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided name is already in use by another player \t\n The provided player does not exist \t\n The provided team does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
+	@PatchMapping(path = "/{playerId}")
+	public ResponseEntity<Object> updateOne(@PathVariable("teamId") UUID teamId, @PathVariable("playerId") UUID playerId, @RequestBody @Valid PlayerUpdateRequest playerUpdateRequest,
 			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			final BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -168,22 +167,20 @@ public class PlayerController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
 		}
 
-		teamName = teamName.toUpperCase();
-
-		logger.info("updating player {} from team {}. Payload: ", playerName, teamName, playerUpdateRequest);
+		logger.info("updating player {} from team {}. Payload: ", playerId, teamId, playerUpdateRequest);
 
 		playerUpdateRequest.setNewName(playerUpdateRequest.getNewName().toUpperCase());
 
 		PlayerResponse playerByName = this.playerService.findByName(playerUpdateRequest.getNewName());
-		if (playerByName != null && !playerByName.getTeamName().equals(teamName)) {
+		if (playerByName != null && !playerByName.getTeamId().equals(teamId)) {
 			logger.warn("The given name is already in use by another player. Payload {}", playerUpdateRequest);
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body(new ConflictResponse<EntityModel<PlayerResponse>>("The provided name is already in use by another player", this.playerResponseModelAssembler.toModel(playerByName)));
 		}
 
-		TeamResponse teamResponse = this.teamService.findByName(teamName);
+		TeamResponse teamResponse = this.teamService.findById(teamId);
 		if (teamResponse != null) {
-			PlayerResponse playerResponse = this.playerService.findByName(playerName);
+			PlayerResponse playerResponse = this.playerService.findById(playerId);
 			if (playerResponse != null) {
 				Player player = new Player();
 				player.setName(playerUpdateRequest.getNewName());
@@ -206,11 +203,11 @@ public class PlayerController {
 	}
 
 	@Operation(summary = "Transfer a player to another team")
-	@ApiResponse(responseCode = "200", description = "Player updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
-	@ApiResponse(responseCode = "400", description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
-	@ApiResponse(responseCode = "409", description = "The provided player does not exist \t\n The provided team does not exist \t\n The provided new team does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
-	@PatchMapping(path = "/{playerName}/transfer")
-	public ResponseEntity<Object> updateTeam(@PathVariable("teamName") String teamName, @PathVariable("playerName") String playerName,
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_OK, description = "Player updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlayerResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided player does not exist \t\n The provided team does not exist \t\n The provided new team does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
+	@PatchMapping(path = "/{playerId}/transfer")
+	public ResponseEntity<Object> updateTeam(@PathVariable("teamId") UUID teamId, @PathVariable("playerId") UUID playerId,
 			@RequestBody @Valid PlayerUpdateTeamRequest playerUpdateTeamRequest, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			final BadRequestResponse badRequestResponse = new BadRequestResponse();
@@ -218,18 +215,14 @@ public class PlayerController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
 		}
 
-		teamName = teamName.toUpperCase();
+		logger.info("updating player {} from team {}. Payload: ", playerId, teamId, playerUpdateTeamRequest);
 
-		logger.info("updating player {} from team {}. Payload: ", playerName, teamName, playerUpdateTeamRequest);
-
-		playerUpdateTeamRequest.setNewTeamName(playerUpdateTeamRequest.getNewTeamName().toUpperCase());
-
-		TeamResponse teamResponse = this.teamService.findByName(teamName);
+		TeamResponse teamResponse = this.teamService.findById(teamId);
 		if (teamResponse != null) {
-			PlayerResponse playerResponse = this.playerService.findByName(playerName);
+			PlayerResponse playerResponse = this.playerService.findById(playerId);
 			if (playerResponse != null) {
 				Player player = this.playerService.getConverter().fromResponseToEntity(playerResponse);
-				TeamResponse newTeamResponse = this.teamService.findByName(playerUpdateTeamRequest.getNewTeamName());
+				TeamResponse newTeamResponse = this.teamService.findById(playerUpdateTeamRequest.getNewTeamId());
 				if (newTeamResponse != null) {
 					player.setTeam(new Team(newTeamResponse.getTeamId()));
 				} else {
@@ -251,30 +244,25 @@ public class PlayerController {
 		}
 	}
 
-	@Operation(summary = "Delete a player by its name and team")
-	@ApiResponse(responseCode = "204", description = "Player deleted successfully", content = @Content)
-	@ApiResponse(responseCode = "409", description = "The provided player does not exist \t\n The provided team does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
-	@DeleteMapping(path = "/{playerName}")
-	public ResponseEntity<Object> deleteOne(@PathVariable("teamName") String teamName, @PathVariable("playerName") String playerName) {
-		teamName = teamName.toUpperCase();
+	@Operation(summary = "Delete a player by its id and team id")
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_NO_CONTENT, description = "Player deleted successfully", content = @Content)
+	@DeleteMapping(path = "/{playerId}")
+	public ResponseEntity<Object> deleteOne(@PathVariable("teamId") UUID teamId, @PathVariable("playerId") UUID playerId) {
+		logger.info("deleting player {} from team {} ", playerId, teamId);
 
-		logger.info("deleting player {} from team {} ", playerName, teamName);
-
-		TeamResponse teamResponse = this.teamService.findByName(teamName);
+		TeamResponse teamResponse = this.teamService.findById(teamId);
 		if (teamResponse != null) {
-			PlayerResponse player = this.playerService.findByName(playerName);
+			PlayerResponse player = this.playerService.findById(playerId);
 			if (player != null) {
 				this.playerService.deleteById(player.getPlayerId());
 
-				logger.info("Player deleted successfully. team {} player {}", teamName, playerName);
-				return ResponseEntity.noContent().build();
+				logger.info("Player deleted successfully. team {} player {}", teamId, playerId);
 			} else {
-				logger.warn("The provided player does not exist. Team {} Player {}", teamName, playerName);
-				return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<PlayerResponse>("The provided player does not exist"));
+				logger.warn("The provided player does not exist. Team {} Player {}", teamId, playerId);
 			}
 		} else {
-			logger.warn("The provided team does not exist. Team {} Player {}", teamName, playerName);
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<TeamResponse>("The provided team does not exist"));
+			logger.warn("The provided team does not exist. Team {} Player {}", teamId, playerId);
 		}
+		return ResponseEntity.noContent().build();
 	}
 }

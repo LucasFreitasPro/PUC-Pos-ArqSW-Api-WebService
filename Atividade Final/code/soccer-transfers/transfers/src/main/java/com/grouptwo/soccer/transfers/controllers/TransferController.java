@@ -3,6 +3,7 @@ package com.grouptwo.soccer.transfers.controllers;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -30,6 +31,7 @@ import com.grouptwo.soccer.transfers.lib.responses.ConflictResponse;
 import com.grouptwo.soccer.transfers.lib.responses.PlayerResponse;
 import com.grouptwo.soccer.transfers.lib.responses.TeamResponse;
 import com.grouptwo.soccer.transfers.lib.responses.TransferResponse;
+import com.grouptwo.soccer.transfers.lib.utils.CommonUtil;
 import com.grouptwo.soccer.transfers.models.Transfer;
 import com.grouptwo.soccer.transfers.services.TransferService;
 
@@ -59,9 +61,9 @@ public class TransferController {
 	}
 
 	@Operation(summary = "Transfer a player to another team")
-	@ApiResponse(responseCode = "201", description = "Player successfully transferred", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
-	@ApiResponse(responseCode = "400", description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
-	@ApiResponse(responseCode = "409", description = "Origin team does not exist \t\n Destiny team does not exist \t\n Player does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Player successfully transferred", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "Origin team does not exist \t\n Destiny team does not exist \t\n Player does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@PostMapping
 	public ResponseEntity<Object> transferPlayer(@RequestBody @Valid TransferRequest transferRequest, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -74,7 +76,7 @@ public class TransferController {
 
 		PlayerResponse playerResponse = null;
 		try {
-			playerResponse = restTemplate.getForObject(TEAMS_API + "/{teamName}/players/{playerName}", PlayerResponse.class, transferRequest.getFromTeamName(), transferRequest.getPlayerName());
+			playerResponse = restTemplate.getForObject(TEAMS_API + "/{teamId}/players/{playerId}", PlayerResponse.class, transferRequest.getOriginTeamId(), transferRequest.getPlayerId());
 		} catch (HttpClientErrorException e) {
 			logger.error("Error calling TEAMS API", e);
 			return ResponseEntity.status(HttpStatus.valueOf(e.getRawStatusCode())).body(e.getMessage());
@@ -84,14 +86,14 @@ public class TransferController {
 			TeamResponse teamResponseTo = null;
 			TeamResponse teamResponseFrom = null;
 			try {
-				teamResponseTo = restTemplate.getForObject(TEAMS_API + "/{teamName}", TeamResponse.class, transferRequest.getToTeamName());
+				teamResponseTo = restTemplate.getForObject(TEAMS_API + "/{teamId}", TeamResponse.class, transferRequest.getDestinyTeamId());
 			} catch (HttpClientErrorException e) {
 				logger.error("Error calling TEAMS API", e);
 				return ResponseEntity.status(HttpStatus.valueOf(e.getRawStatusCode())).body(e.getMessage());
 			}
 
 			try {
-				teamResponseFrom = restTemplate.getForObject(TEAMS_API + "/{teamName}", TeamResponse.class, transferRequest.getFromTeamName());
+				teamResponseFrom = restTemplate.getForObject(TEAMS_API + "/{teamId}", TeamResponse.class, transferRequest.getOriginTeamId());
 				if (teamResponseFrom == null) {
 					return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<TeamResponse>("Origin team does not exist"));
 				}
@@ -101,11 +103,10 @@ public class TransferController {
 			}
 
 			if (teamResponseTo != null && teamResponseTo.getName() != null) {
-				PlayerUpdateTeamRequest playerUpdateTeamRequest = new PlayerUpdateTeamRequest();
-				playerUpdateTeamRequest.setNewTeamName(transferRequest.getToTeamName());
+				PlayerUpdateTeamRequest playerUpdateTeamRequest = new PlayerUpdateTeamRequest(transferRequest.getDestinyTeamId());
 
 				try {
-					restTemplate.patchForObject(TEAMS_API + "/{teamName}/players/{playerName}/transfer", playerUpdateTeamRequest, PlayerResponse.class, transferRequest.getFromTeamName(), transferRequest.getPlayerName());
+					restTemplate.patchForObject(TEAMS_API + "/{teamId}/players/{playerId}/transfer", playerUpdateTeamRequest, PlayerResponse.class, transferRequest.getOriginTeamId(), transferRequest.getPlayerId());
 				} catch (HttpClientErrorException e) {
 					logger.error("Error calling TEAMS API", e);
 					return ResponseEntity.status(HttpStatus.valueOf(e.getRawStatusCode())).body(e.getMessage());
@@ -130,11 +131,11 @@ public class TransferController {
 	}
 
 	@Operation(summary = "Get all transfers from a team")
-	@ApiResponse(responseCode = "200", description = "Transfers found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
-	@ApiResponse(responseCode = "404", description = "No transfer found", content = @Content)
-	@GetMapping("/from-team/{teamName}")
-	public ResponseEntity<List<TransferResponse>> getAllFromTeam(@PathVariable("teamName") String teamName) {
-		List<Transfer> transfers = this.service.findByFromTeamName(teamName);
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_OK, description = "Transfers found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_NOT_FOUND, description = "No transfer found", content = @Content)
+	@GetMapping("/from-team/{teamId}")
+	public ResponseEntity<List<TransferResponse>> getAllFromTeam(@PathVariable("teamId") UUID teamId) {
+		List<Transfer> transfers = this.service.findByOriginTeamId(teamId);
 		if (transfers != null && !transfers.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(transfers.stream().map(this.service.getConverter()::fromEntityToResponse).collect(Collectors.toList()));
 		} else {
@@ -143,11 +144,11 @@ public class TransferController {
 	}
 
 	@Operation(summary = "Get all transfers to a team")
-	@ApiResponse(responseCode = "200", description = "Transfers found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
-	@ApiResponse(responseCode = "404", description = "No transfers found", content = @Content)
-	@GetMapping("/to-team/{teamName}")
-	public ResponseEntity<List<TransferResponse>> getAllToTeam(@PathVariable("teamName") String teamName) {
-		List<Transfer> transfers = this.service.findByToTeamName(teamName);
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_OK, description = "Transfers found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_NOT_FOUND, description = "No transfers found", content = @Content)
+	@GetMapping("/to-team/{teamId}")
+	public ResponseEntity<List<TransferResponse>> getAllToTeam(@PathVariable("teamId") UUID teamId) {
+		List<Transfer> transfers = this.service.findByDestinyTeamId(teamId);
 		if (transfers != null && !transfers.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(transfers.stream().map(this.service.getConverter()::fromEntityToResponse).collect(Collectors.toList()));
 		} else {
@@ -156,11 +157,11 @@ public class TransferController {
 	}
 
 	@Operation(summary = "Get all player transfers")
-	@ApiResponse(responseCode = "200", description = "Transfers found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
-	@ApiResponse(responseCode = "404", description = "No transfers found", content = @Content)
-	@GetMapping("/from-player/{playerName}")
-	public ResponseEntity<List<TransferResponse>> getAllPlayerTransfers(@PathVariable("playerName") String playerName) {
-		List<Transfer> transfers = this.service.findByPlayerName(playerName);
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_OK, description = "Transfers found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransferResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_NOT_FOUND, description = "No transfers found", content = @Content)
+	@GetMapping("/from-player/{playerId}")
+	public ResponseEntity<List<TransferResponse>> getAllPlayerTransfers(@PathVariable("playerId") UUID playerId) {
+		List<Transfer> transfers = this.service.findByPlayerId(playerId);
 		if (transfers != null && !transfers.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.OK).body(transfers.stream().map(this.service.getConverter()::fromEntityToResponse).collect(Collectors.toList()));
 		} else {

@@ -1,0 +1,167 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/v1/transfers:
+    post:
+      tags:
+      - transfer-controller
+      summary: Transfer a player to another team
+      operationId: transferPlayer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+        required: true
+      responses:
+        "409":
+          description: "Origin team does not exist \t\n Destiny team does not exist\
+            \ \t\n Player does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "201":
+          description: Player successfully transferred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /api/v1/transfers/to-team/{teamId}:
+    get:
+      tags:
+      - transfer-controller
+      summary: Get all transfers to a team
+      operationId: getAllToTeam
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: No transfers found
+        "200":
+          description: Transfers found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+  /api/v1/transfers/from-team/{teamId}:
+    get:
+      tags:
+      - transfer-controller
+      summary: Get all transfers from a team
+      operationId: getAllFromTeam
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: No transfer found
+        "200":
+          description: Transfers found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+  /api/v1/transfers/from-player/{playerId}:
+    get:
+      tags:
+      - transfer-controller
+      summary: Get all player transfers
+      operationId: getAllPlayerTransfers
+      parameters:
+      - name: playerId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: No transfers found
+        "200":
+          description: Transfers found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+components:
+  schemas:
+    TransferRequest:
+      required:
+      - destiny-team-id
+      - origin-team-id
+      - player-id
+      - transfer-value
+      type: object
+      properties:
+        player-id:
+          type: string
+          format: uuid
+        origin-team-id:
+          type: string
+          format: uuid
+        destiny-team-id:
+          type: string
+          format: uuid
+        transfer-value:
+          type: number
+          format: double
+    ConflictResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        resource:
+          type: object
+    TransferResponse:
+      type: object
+      properties:
+        player-id:
+          type: string
+          format: uuid
+        origin-team-id:
+          type: string
+          format: uuid
+        destiny-team-id:
+          type: string
+          format: uuid
+        transferred-at:
+          type: string
+          format: date-time
+        transfer-value:
+          type: number
+          format: double
+    BadRequestResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationResult'
+    ValidationResult:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string

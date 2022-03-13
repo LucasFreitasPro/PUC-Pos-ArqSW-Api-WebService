@@ -9,9 +9,9 @@ import com.grouptwo.soccer.transfers.models.Transfer;
 
 public interface TransferRepository extends JpaRepository<Transfer, UUID> {
 
-	List<Transfer> findByFromTeamName(String fromTeam);
+	List<Transfer> findByOriginTeamId(UUID originTeamId);
 
-	List<Transfer> findByToTeamName(String toTeam);
+	List<Transfer> findByDestinyTeamId(UUID destinyTeamId);
 
-	List<Transfer> findByPlayerName(String playerName);
+	List<Transfer> findByPlayerId(UUID playerId);
 }

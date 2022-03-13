@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder(value = { "team-name", "name", "birth", "country" })
+@JsonPropertyOrder(value = { "player-id", "team-id", "name", "birth", "country" })
 public class PlayerResponse extends DefaultPlayerResponse {
 
 	private LocalDate birth;

@@ -1,19 +1,20 @@
 package com.grouptwo.soccer.transfers.lib.responses;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TransferResponse {
 
-	@JsonProperty("player-name")
-	private String playerName;
+	@JsonProperty("player-id")
+	private UUID playerId;
 
-	@JsonProperty("from-team-name")
-	private String fromTeamName;
+	@JsonProperty("origin-team-id")
+	private UUID originTeamId;
 
-	@JsonProperty("to-team-name")
-	private String toTeamName;
+	@JsonProperty("destiny-team-id")
+	private UUID destinyTeamId;
 
 	@JsonProperty("transferred-at")
 	private LocalDateTime transferredAt;
@@ -21,28 +22,28 @@ public class TransferResponse {
 	@JsonProperty("transfer-value")
 	private Double transferValue;
 
-	public String getPlayerName() {
-		return playerName;
+	public UUID getPlayerId() {
+		return playerId;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setPlayerId(UUID playerId) {
+		this.playerId = playerId;
 	}
 
-	public String getFromTeamName() {
-		return fromTeamName;
+	public UUID getOriginTeamId() {
+		return originTeamId;
 	}
 
-	public void setFromTeamName(String fromTeamName) {
-		this.fromTeamName = fromTeamName;
+	public void setOriginTeamId(UUID originTeamId) {
+		this.originTeamId = originTeamId;
 	}
 
-	public String getToTeamName() {
-		return toTeamName;
+	public UUID getDestinyTeamId() {
+		return destinyTeamId;
 	}
 
-	public void setToTeamName(String toTeamName) {
-		this.toTeamName = toTeamName;
+	public void setDestinyTeamId(UUID destinyTeamId) {
+		this.destinyTeamId = destinyTeamId;
 	}
 
 	public LocalDateTime getTransferredAt() {

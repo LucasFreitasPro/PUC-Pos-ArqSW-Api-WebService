@@ -1,0 +1,511 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8083
+  description: Generated server url
+paths:
+  /api/v1/teams:
+    get:
+      tags:
+      - team-controller
+      summary: Get all registered teams
+      operationId: getAll
+      responses:
+        "404":
+          description: Team not found
+        "200":
+          description: List of all registered teams
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamResponse'
+    post:
+      tags:
+      - team-controller
+      summary: Register a new team
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRegistrationRequest'
+        required: true
+      responses:
+        "201":
+          description: Team registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamRegistrationResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "409":
+          description: Team is already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/teams/{teamId}/players:
+    get:
+      tags:
+      - player-controller
+      summary: Get registered players from a team
+      operationId: getAll_1
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: No players found
+        "200":
+          description: All registered players from a team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+    post:
+      tags:
+      - player-controller
+      summary: Register a new player in a team
+      operationId: register_1
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerRegistrationRequest'
+        required: true
+      responses:
+        "409":
+          description: "Player already registered \t\n The provided team does not\
+            \ exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "201":
+          description: Player registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerRegistrationResponse'
+  /api/v1/teams/{teamId}:
+    get:
+      tags:
+      - team-controller
+      summary: Get a team by its id
+      operationId: getOne
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: Team not found
+        "200":
+          description: Found the team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamResponse'
+    delete:
+      tags:
+      - team-controller
+      summary: Delete a team by its id
+      operationId: deleteOne
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: Team deleted successfully
+    patch:
+      tags:
+      - team-controller
+      summary: Update a team by its id
+      operationId: updateOne
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamUpdateRequest'
+        required: true
+      responses:
+        "200":
+          description: Team updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamResponse'
+        "400":
+          description: Invalid payload
+        "409":
+          description: "The provided name is already in use on another team \t\n The\
+            \ provided team does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/teams/{teamId}/players/{playerId}:
+    get:
+      tags:
+      - player-controller
+      summary: Get a player by its id and team id
+      operationId: getOne_1
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: playerId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: Player not found
+        "200":
+          description: A player from a team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+    delete:
+      tags:
+      - player-controller
+      summary: Delete a player by its id and team id
+      operationId: deleteOne_1
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: playerId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: Player deleted successfully
+    patch:
+      tags:
+      - player-controller
+      summary: Update a player by its id and team id
+      operationId: updateOne_1
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: playerId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerUpdateRequest'
+        required: true
+      responses:
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "409":
+          description: "The provided name is already in use by another player \t\n\
+            \ The provided player does not exist \t\n The provided team does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "200":
+          description: Player updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+  /api/v1/teams/{teamId}/players/{playerId}/transfer:
+    patch:
+      tags:
+      - player-controller
+      summary: Transfer a player to another team
+      operationId: updateTeam
+      parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: playerId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerUpdateTeamRequest'
+        required: true
+      responses:
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "200":
+          description: Player updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerResponse'
+        "409":
+          description: "The provided player does not exist \t\n The provided team\
+            \ does not exist \t\n The provided new team does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+components:
+  schemas:
+    TeamRegistrationRequest:
+      required:
+      - country
+      - name
+      - state
+      type: object
+      properties:
+        name:
+          type: string
+        state:
+          maxLength: 2
+          minLength: 2
+          type: string
+        country:
+          type: string
+    TeamRegistrationResponse:
+      type: object
+      properties:
+        team-id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+    BadRequestResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationResult'
+    ValidationResult:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    ConflictResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        resource:
+          type: object
+    PlayerRegistrationRequest:
+      required:
+      - birth
+      - country
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        birth:
+          type: string
+          format: date
+        country:
+          type: string
+    PlayerRegistrationResponse:
+      type: object
+      properties:
+        player-id:
+          type: string
+          format: uuid
+        team-id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        birth:
+          type: string
+          format: date
+        country:
+          type: string
+    TeamUpdateRequest:
+      required:
+      - new-name
+      - new-state
+      type: object
+      properties:
+        new-name:
+          type: string
+        new-state:
+          maxLength: 2
+          minLength: 2
+          type: string
+    CollectionModelEntityModelPlayerResponse:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityModelPlayerResponse'
+    EntityModelPlayerResponse:
+      type: object
+      properties:
+        player-id:
+          type: string
+          format: uuid
+        team-id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        birth:
+          type: string
+          format: date
+        country:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        hreflang:
+          type: string
+        media:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+    PlayerResponse:
+      type: object
+      properties:
+        player-id:
+          type: string
+          format: uuid
+        team-id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        birth:
+          type: string
+          format: date
+        country:
+          type: string
+    TeamResponse:
+      type: object
+      properties:
+        team-id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        players:
+          $ref: '#/components/schemas/CollectionModelEntityModelPlayerResponse'
+    PlayerUpdateRequest:
+      required:
+      - new-name
+      type: object
+      properties:
+        new-name:
+          type: string
+    PlayerUpdateTeamRequest:
+      required:
+      - new-team-id
+      type: object
+      properties:
+        new-team-id:
+          type: string
+          format: uuid

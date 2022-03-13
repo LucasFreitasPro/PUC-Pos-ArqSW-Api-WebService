@@ -2,11 +2,13 @@ package com.grouptwo.soccer.transfers.lib.responses;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder(value = {"teamId", "name", "state", "country", "players"})
 public abstract class DefaultTeamResponse {
 
-	@JsonIgnore
+	@JsonProperty("team-id")
 	private UUID teamId;
 
 	private String name;
