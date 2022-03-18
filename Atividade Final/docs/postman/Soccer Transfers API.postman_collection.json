@@ -1,0 +1,679 @@
+{
+	"info": {
+		"_postman_id": "ab141169-702d-41ca-b168-f65a18965305",
+		"name": "Soccer Transfers API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Teams",
+			"item": [
+				{
+					"name": "All Teams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "30",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "state,DESC",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Team",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/502baa58-aa9e-431d-8709-bda463e47eb6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"502baa58-aa9e-431d-8709-bda463e47eb6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register a Team",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Paranaense\",\r\n    \"state\" : \"PR\",\r\n    \"country\" : \"Brasil\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Team",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"new-name\" : \"Villa Nova\",\r\n    \"new-state\" : \"MG\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/c0f67811-bbc5-435f-96d3-0a4aacddd4c1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"c0f67811-bbc5-435f-96d3-0a4aacddd4c1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Team",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/15178544-9423-4cc7-a440-396e55970cbe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"15178544-9423-4cc7-a440-396e55970cbe"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Players",
+			"item": [
+				{
+					"name": "All Players",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/8bb5f134-bf2f-4f6a-b45c-342518d25e7c/players",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"8bb5f134-bf2f-4f6a-b45c-342518d25e7c",
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register a Player",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"name\"  : \"Josias Leal\",\r\n\"birth\" : \"\",\r\n\"country\" : \"Brasil\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/8bb5f134-bf2f-4f6a-b45c-342518d25e7c/players",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"8bb5f134-bf2f-4f6a-b45c-342518d25e7c",
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Player",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/8bb5f134-bf2f-4f6a-b45c-342518d25e7c/players/3d2d6127-7108-4222-9348-413ec3a70bb0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"8bb5f134-bf2f-4f6a-b45c-342518d25e7c",
+								"players",
+								"3d2d6127-7108-4222-9348-413ec3a70bb0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Player",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Paulo Costa\",\r\n    \"birth\" : \"1984-12-13\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/d5c79db2-cd6a-4b12-9889-341d9c31c090/players/5f5e1f01-26dc-4541-b9b2-5fb80d91fcea",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"d5c79db2-cd6a-4b12-9889-341d9c31c090",
+								"players",
+								"5f5e1f01-26dc-4541-b9b2-5fb80d91fcea"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Player",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/teams/c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c/players/b6ddda71-e1e1-4e29-a9ca-ece10dc1a43a",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"teams",
+								"c9e45ddb-f6c5-41eb-b0d0-fb0b35f3ce6c",
+								"players",
+								"b6ddda71-e1e1-4e29-a9ca-ece10dc1a43a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transfers",
+			"item": [
+				{
+					"name": "Transfer Player",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"player-id\" : \"194a557e-596b-450b-bad9-86a2769c0527\",\r\n    \"origin-team-id\" : \"502baa58-aa9e-431d-8709-bda463e47eb6\",\r\n    \"destiny-team-id\" : \"7b2a166e-8abd-4bdd-9077-c78bc4a80bec\",\r\n    \"transfer-value\" : 500.0\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/transfers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"transfers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers from Team",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/transfers/from-team/ATL%C3%89TICO",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"transfers",
+								"from-team",
+								"ATL%C3%89TICO"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers to Team",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/transfers/to-team/ATHLETICO%20PARANAENSE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"transfers",
+								"to-team",
+								"ATHLETICO%20PARANAENSE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers from Players",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/transfers/from-player/SAMUEL%20SOUZA",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"transfers",
+								"from-player",
+								"SAMUEL%20SOUZA"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "E-mail",
+			"item": [
+				{
+					"name": "Send E-mail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"to-email\" : \"lucasfrpp@gmail.com\",\r\n    \"cc-email\" : \"lucasfrpp@gmail.com\",\r\n    \"subject\" : \"AWS - Apresentação do Trabalho - Monitoramento\",\r\n    \"message\" : \"Teste 2\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8085/api/v1/email",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"api",
+								"v1",
+								"email"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Championships",
+			"item": [
+				{
+					"name": "New Championship",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Brasileirão\",\r\n    \"division-id\" : \"0c34b5e8-b20a-4894-aaff-84b09b03b1f5\",\r\n    \"country\" : \"Brasil\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/e2f0957d-750c-4bfa-81a7-04396ba1d74d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"e2f0957d-750c-4bfa-81a7-04396ba1d74d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Seasons",
+			"item": [
+				{
+					"name": "Start Season",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"year\" : \"2022\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/e2f0957d-750c-4bfa-81a7-04396ba1d74d/seasons/start",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"e2f0957d-750c-4bfa-81a7-04396ba1d74d",
+								"seasons",
+								"start"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Divisions",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/divisions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"divisions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register a Division",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Série A\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/divisions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"divisions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/divisions/1e0a7e25-fbc2-4cfa-bb83-4c24f94a9406",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"divisions",
+								"1e0a7e25-fbc2-4cfa-bb83-4c24f94a9406"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update One",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"new-name\" : \"Série B\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/divisions/1e0a7e25-fbc2-4cfa-bb83-4c24f94a9406",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"divisions",
+								"1e0a7e25-fbc2-4cfa-bb83-4c24f94a9406"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete One",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/divisions/680ced40-3eea-41fe-a697-7960a0c37cba",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"divisions",
+								"680ced40-3eea-41fe-a697-7960a0c37cba"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
