@@ -14,8 +14,11 @@ public class ChampionshipConverter {
 
 	private final SeasonConverter seasonConverter;
 
-	public ChampionshipConverter(SeasonConverter seasonConverter) {
+	private final DivisionConverter divisionConverter;
+
+	public ChampionshipConverter(SeasonConverter seasonConverter, DivisionConverter divisionConverter) {
 		this.seasonConverter = seasonConverter;
+		this.divisionConverter = divisionConverter;
 	}
 
 	public Championship fromRequestToEntity(ChampionshipRegisteringRequest request) {
@@ -36,6 +39,9 @@ public class ChampionshipConverter {
 		BeanUtils.copyProperties(entity, response);
 		if (entity.getSeasons() != null) {
 			response.setSeasons(entity.getSeasons().stream().map(seasonConverter::fromEntityToResponse).collect(Collectors.toSet()));
+		}
+		if (entity.getDivision() != null) {
+			response.setDivision(this.divisionConverter.fromEntityToResponse(entity.getDivision()));
 		}
 		return response;
 	}

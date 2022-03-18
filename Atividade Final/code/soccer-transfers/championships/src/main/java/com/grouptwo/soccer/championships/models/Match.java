@@ -14,20 +14,21 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "match")
+@Table(name = "match", uniqueConstraints = @UniqueConstraint(columnNames = { "team_id_a", "team_id_b", "arena", "date" }))
 public class Match {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 
-	@Column(nullable = false)
-	private UUID aTeamId;
+	@Column(name = "team_id_a", nullable = false)
+	private UUID teamIdA;
 
-	@Column(nullable = false)
-	private UUID bTeamId;
+	@Column(name = "team_id_b", nullable = false)
+	private UUID teamIdB;
 
 	@Column(nullable = false)
 	private String arena;
@@ -45,6 +46,14 @@ public class Match {
 	@JoinColumn(name = "season_id", referencedColumnName = "id", nullable = false)
 	private Season season;
 
+	public Match() {
+
+	}
+
+	public Match(UUID id) {
+		this.id = id;
+	}
+
 	public UUID getId() {
 		return id;
 	}
@@ -53,20 +62,20 @@ public class Match {
 		this.id = id;
 	}
 
-	public UUID getaTeamId() {
-		return aTeamId;
+	public UUID getTeamIdA() {
+		return teamIdA;
 	}
 
-	public void setaTeamId(UUID aTeamId) {
-		this.aTeamId = aTeamId;
+	public void setTeamIdA(UUID teamIdA) {
+		this.teamIdA = teamIdA;
 	}
 
-	public UUID getbTeamId() {
-		return bTeamId;
+	public UUID getTeamIdB() {
+		return teamIdB;
 	}
 
-	public void setbTeamId(UUID bTeamId) {
-		this.bTeamId = bTeamId;
+	public void setTeamIdB(UUID teamIdB) {
+		this.teamIdB = teamIdB;
 	}
 
 	public String getArena() {

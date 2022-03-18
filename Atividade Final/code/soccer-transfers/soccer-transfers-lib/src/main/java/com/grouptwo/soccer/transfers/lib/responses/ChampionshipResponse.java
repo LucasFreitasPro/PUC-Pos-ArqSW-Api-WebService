@@ -15,11 +15,11 @@ public class ChampionshipResponse {
 
 	private String name;
 
-	@JsonProperty("division-name")
-	private String divisionName;
+	private DivisionResponse division;
 
 	private String country;
 
+	@JsonIgnore
 	private Boolean deleted;
 
 	@JsonIgnore
@@ -47,12 +47,12 @@ public class ChampionshipResponse {
 		this.name = name;
 	}
 
-	public String getDivisionName() {
-		return divisionName;
+	public DivisionResponse getDivision() {
+		return division;
 	}
 
-	public void setDivisionName(String divisionName) {
-		this.divisionName = divisionName;
+	public void setDivision(DivisionResponse division) {
+		this.division = division;
 	}
 
 	public String getCountry() {

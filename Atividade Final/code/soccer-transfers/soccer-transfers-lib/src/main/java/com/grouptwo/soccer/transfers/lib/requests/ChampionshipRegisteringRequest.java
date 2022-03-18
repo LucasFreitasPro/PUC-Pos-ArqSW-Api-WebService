@@ -1,6 +1,9 @@
 package com.grouptwo.soccer.transfers.lib.requests;
 
+import java.util.UUID;
+
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,9 +12,9 @@ public class ChampionshipRegisteringRequest {
 	@NotBlank
 	private String name;
 
-	@JsonProperty("division-name")
-	@NotBlank
-	private String divisionName;
+	@JsonProperty("division-id")
+	@NotNull
+	private UUID divisionId;
 
 	@NotBlank
 	private String country;
@@ -24,12 +27,12 @@ public class ChampionshipRegisteringRequest {
 		this.name = name;
 	}
 
-	public String getDivisionName() {
-		return divisionName;
+	public UUID getDivisionId() {
+		return divisionId;
 	}
 
-	public void setDivisionName(String divisionName) {
-		this.divisionName = divisionName;
+	public void setDivisionId(UUID divisionId) {
+		this.divisionId = divisionId;
 	}
 
 	public String getCountry() {

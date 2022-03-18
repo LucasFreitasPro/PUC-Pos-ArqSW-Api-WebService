@@ -29,7 +29,6 @@ public class SeasonConverter {
 	public SeasonResponse fromEntityToResponse(Season entity) {
 		SeasonResponse response = new SeasonResponse();
 		BeanUtils.copyProperties(entity, response);
-		response.setChampionId(entity.getChampionship().getId());
 		return response;
 	}
 

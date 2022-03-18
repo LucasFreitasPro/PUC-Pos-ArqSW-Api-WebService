@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.grouptwo.soccer.championships.models.Match;
 import com.grouptwo.soccer.transfers.lib.requests.MatchRegisteringRequest;
+import com.grouptwo.soccer.transfers.lib.responses.MatchResponse;
 
 @Component
 public class MatchConverter {
@@ -19,5 +20,11 @@ public class MatchConverter {
 		MatchRegisteringRequest request = new MatchRegisteringRequest();
 		BeanUtils.copyProperties(entity, request);
 		return request;
+	}
+
+	public MatchResponse fromEntityToResponse(Match entity) {
+		MatchResponse response = new MatchResponse();
+		BeanUtils.copyProperties(entity, response);
+		return response;
 	}
 }

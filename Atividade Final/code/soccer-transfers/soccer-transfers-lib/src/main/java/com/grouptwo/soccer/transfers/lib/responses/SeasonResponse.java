@@ -19,13 +19,13 @@ public class SeasonResponse {
 	@JsonProperty("ended-at")
 	private LocalDateTime endedAt;
 
+	@JsonIgnore
+	private Boolean deleted;
+
 	private List<MatchResponse> matches;
 
 	@JsonIgnore
 	private Boolean addLinkToEndPath;
-
-	@JsonIgnore
-	private UUID championId;
 
 	public UUID getId() {
 		return id;
@@ -59,6 +59,14 @@ public class SeasonResponse {
 		this.endedAt = endedAt;
 	}
 
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	public List<MatchResponse> getMatches() {
 		return matches;
 	}
@@ -73,13 +81,5 @@ public class SeasonResponse {
 
 	public void setAddLinkToEndPath(Boolean addLinkToEndPath) {
 		this.addLinkToEndPath = addLinkToEndPath;
-	}
-
-	public UUID getChampionId() {
-		return this.championId;
-	}
-
-	public void setChampionId(UUID championId) {
-		this.championId = championId;
 	}
 }

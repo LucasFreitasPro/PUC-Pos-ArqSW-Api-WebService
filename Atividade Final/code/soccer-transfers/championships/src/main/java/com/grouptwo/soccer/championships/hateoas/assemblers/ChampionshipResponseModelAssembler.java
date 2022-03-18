@@ -26,6 +26,8 @@ public class ChampionshipResponseModelAssembler implements RepresentationModelAs
 
 	@Override
 	public EntityModel<ChampionshipResponse> toModel(ChampionshipResponse response) {
+		seasonResponseModelAssembler.setChampionshipId(response.getId());
+
 		Link withSelfRel = linkTo(methodOn(ChampionshipController.class).getOne(response.getId())).withSelfRel();
 		Link withRel = linkTo(methodOn(ChampionshipController.class).getAll()).withRel("championships");
 
@@ -34,7 +36,7 @@ public class ChampionshipResponseModelAssembler implements RepresentationModelAs
 		}
 
 		if (response.getAddLinkToRegisterSeason() != null && response.getAddLinkToRegisterSeason()) {
-			return EntityModel.of(response, withSelfRel, withRel, linkTo(methodOn(SeasonController.class).register(response.getId(), null, null)).withRel("start a season"));
+			return EntityModel.of(response, withSelfRel, withRel, linkTo(methodOn(SeasonController.class).start(response.getId(), null, null)).withRel("start a season"));
 		} else {
 			return EntityModel.of(response, withSelfRel, withRel);
 		}

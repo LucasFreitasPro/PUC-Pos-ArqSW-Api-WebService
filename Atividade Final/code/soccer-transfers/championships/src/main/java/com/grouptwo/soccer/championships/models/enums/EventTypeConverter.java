@@ -1,6 +1,4 @@
-package com.grouptwo.soccer.championships.models;
-
-import java.util.stream.Stream;
+package com.grouptwo.soccer.championships.models.enums;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -15,9 +13,11 @@ public class EventTypeConverter implements AttributeConverter<EventType, String>
 
 	@Override
 	public EventType convertToEntityAttribute(String code) {
-		return Stream.of(EventType.values())
-				.filter(e -> e.getCode().equals(code))
-				.findFirst()
-				.orElseThrow(IllegalArgumentException::new);
+		for (EventType et : EventType.values()) {
+			if (et.getCode().equalsIgnoreCase(code)) {
+				return et;
+			}
+		}
+		return null;
 	}
 }

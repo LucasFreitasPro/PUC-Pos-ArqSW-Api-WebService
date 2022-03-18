@@ -44,12 +44,17 @@ public class ChampionshipService {
 		return this.championshipRepository.save(entity);
 	}
 
-	public ChampionshipResponse findByNameAndDivisionName(String name, String divisionName) {
-		Championship championship = this.championshipRepository.findByNameAndDivisionName(name, divisionName);
+	public ChampionshipResponse findByNameAndDivisionId(String name, UUID divisionId) {
+		Championship championship = this.championshipRepository.findByNameAndDivisionId(name, divisionId);
 		return championship == null ? null : this.championshipConverter.fromEntityToResponse(championship);
 	}
 
 	public void save(ChampionshipResponse championshipResponse) {
 		save(this.championshipConverter.fromResponseToEntity(championshipResponse));
+	}
+
+	public ChampionshipResponse findByName(String name) {
+		Championship championship = this.championshipRepository.findByName(name);
+		return championship != null ? this.championshipConverter.fromEntityToResponse(championship) : null;
 	}
 }

@@ -15,15 +15,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Where;
+
 @Entity
 @Table(name = "season")
+@Where(clause = "deleted = 'f'")
 public class Season {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private Short year;
 
 	@Column(nullable = false)
@@ -31,6 +34,9 @@ public class Season {
 
 	@Column(nullable = true)
 	private LocalDateTime endedAt;
+
+	@Column(nullable = false)
+	private Boolean deleted;
 
 	@ManyToOne
 	@JoinColumn(name = "championship_id", referencedColumnName = "id", nullable = false)

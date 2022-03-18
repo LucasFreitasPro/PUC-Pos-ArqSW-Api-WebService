@@ -9,12 +9,18 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.Where;
 
 @Entity
-@Table(name = "championship")
+@Table(name = "championship", uniqueConstraints = { @UniqueConstraint(columnNames = { "name", "division_id" }) })
+@Where(clause = "deleted = 'f'")
 public class Championship {
 
 	@Id
@@ -24,8 +30,9 @@ public class Championship {
 	@Column(nullable = false)
 	private String name;
 
-	@Column(nullable = false)
-	private String divisionName;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "division_id", referencedColumnName = "id")
+	private Division division;
 
 	@Column(nullable = false)
 	private String country;
@@ -62,12 +69,12 @@ public class Championship {
 		this.name = name;
 	}
 
-	public String getDivisionName() {
-		return divisionName;
+	public Division getDivision() {
+		return division;
 	}
 
-	public void setDivisionName(String divisionName) {
-		this.divisionName = divisionName;
+	public void setDivision(Division division) {
+		this.division = division;
 	}
 
 	public String getCountry() {
