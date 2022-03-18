@@ -538,31 +538,6 @@ public class EventsController {
 	@PostMapping(path = "/warning")
 	public ResponseEntity<Object> warning(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId,
 			@RequestBody @Valid EventRegisteringRequest eventRegisteringRequest, BindingResult bindingResult) {
-		Event event = null;
-		ResponseEntity<Object> responseEntity = common(championshipId, seasonId, matchId, eventRegisteringRequest, event, EventType.WARNING, bindingResult);
-		if (responseEntity != null) {
-			return responseEntity;
-		} else {
-			return ResponseEntity.status(HttpStatus.CREATED).body("");
-		}
-	}
-
-	private ResponseEntity<Object> common(UUID championshipId, UUID seasonId, UUID matchId, EventRegisteringRequest eventRegisteringRequest, Event event, EventType eventType,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			final BadRequestResponse badRequestResponse = new BadRequestResponse();
-			bindingResult.getFieldErrors().stream().forEach(e -> badRequestResponse.addError(e.getField(), e.getDefaultMessage()));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
-		}
-
-		MatchResponse matchResponse = this.matchService.findById(championshipId, seasonId, matchId);
-		if (matchResponse != null) {
-			event = this.eventService.getEventConverter().fromRequestToEntity(eventRegisteringRequest);
-			event.setEventType(eventType);
-			event.setMatch(new Match(matchResponse.getId()));
-			return null;
-		} else {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EventResponse>("The provided match does not exist"));
-		}
+		return ResponseEntity.status(HttpStatus.CREATED).body("");
 	}
 }

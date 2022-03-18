@@ -1,0 +1,1326 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8081
+  description: Generated server url
+paths:
+  /api/v1/divisions:
+    get:
+      tags:
+      - division-controller
+      summary: Get all registered divisions
+      operationId: getAll
+      responses:
+        "404":
+          description: No divisions found
+        "200":
+          description: List of all registered divisions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DivisionResponse'
+    post:
+      tags:
+      - division-controller
+      summary: Register a new division
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DivisionRegisteringRequest'
+        required: true
+      responses:
+        "409":
+          description: Division is already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "201":
+          description: Division registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DivisionResponse'
+  /api/v1/championships:
+    get:
+      tags:
+      - championship-controller
+      summary: Get all registered championships
+      operationId: getAll_1
+      responses:
+        "404":
+          description: No championships found
+        "200":
+          description: List of all registered championships
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChampionshipResponse'
+    post:
+      tags:
+      - championship-controller
+      summary: Register a new championship
+      operationId: register_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChampionshipRegisteringRequest'
+        required: true
+      responses:
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "201":
+          description: Championship registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChampionshipResponse'
+        "409":
+          description: "Championship is already registered \t\n The provided division\
+            \ does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches:
+    get:
+      tags:
+      - match-controller
+      summary: Get all registered matches
+      operationId: getAll_3
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: List of all registered matches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+        "404":
+          description: No matches found
+    post:
+      tags:
+      - match-controller
+      summary: Register a new match
+      operationId: register_2
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchRegisteringRequest'
+        required: true
+      responses:
+        "409":
+          description: "Match is already registered \t\n The provided championship\
+            \ does not exist \t\n The provided season does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "201":
+          description: Match registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/yellow-card:
+    post:
+      tags:
+      - events-controller
+      summary: Register the yellow card event in a match
+      operationId: yellowCard
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "409":
+          description: "Match has already ended \t\n Match must be started first \t\
+            \n The player has already received two yellow cards \t\n The provided\
+            \ match does not exist \t\n The player has already received a red card"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/warning:
+    post:
+      tags:
+      - events-controller
+      summary: Register the warning event in a match
+      operationId: warning
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/substitution:
+    post:
+      tags:
+      - events-controller
+      summary: Register the substitution event in a match
+      operationId: substition
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "409":
+          description: "Match has already ended \t\n Match must be started first \t\
+            \n The player has already received two yellow cards \t\n The provided\
+            \ match does not exist \t\n The player has already received a red card"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/stoppage-time:
+    post:
+      tags:
+      - events-controller
+      summary: Register the stoppage time event in a match
+      operationId: stoppageTime
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/start-match:
+    post:
+      tags:
+      - events-controller
+      summary: Register the start match event
+      operationId: startMatch
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "409":
+          description: "The provided match does not exist \t\n Match has already started\
+            \ \t\n Match has already ended"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/red-card:
+    post:
+      tags:
+      - events-controller
+      summary: Register the red card event in a match
+      operationId: redCard
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "409":
+          description: "The provided match does not exist \t\n Match has already ended\
+            \ \t\n Match must be started first \t\n The player has already received\
+            \ a red card"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/halftime:
+    post:
+      tags:
+      - events-controller
+      summary: Register the halftime event in a match
+      operationId: halftime
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/goal:
+    post:
+      tags:
+      - events-controller
+      summary: Register the goal event in a match
+      operationId: goal
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "409":
+          description: "The provided match does not exist \t\n Match has already ended\
+            \ \t\n Match must be started first"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/foul:
+    post:
+      tags:
+      - events-controller
+      summary: Register the foul event in a match
+      operationId: foul
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "409":
+          description: "The provided match does not exist \t\n Match has already ended\
+            \ \t\n Match must be started first"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/end-match:
+    post:
+      tags:
+      - events-controller
+      summary: Register the end match event
+      operationId: endMatch
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRegisteringRequest'
+        required: true
+      responses:
+        "201":
+          description: Event registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "409":
+          description: "The provided match does not exist \t\n Match must be started\
+            \ first \t\n Match has already ended"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/championships/{championshipId}/seasons/start:
+    post:
+      tags:
+      - season-controller
+      summary: Start a new championship season
+      operationId: start
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeasonRegisteringRequest'
+        required: true
+      responses:
+        "409":
+          description: "Season has already started \t\n Season is ended \t\n Can't\
+            \ start a season until all seasons are ended \t\n The provided championship\
+            \ does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "201":
+          description: Season started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonResponse'
+  /api/v1/divisions/{divisionId}:
+    get:
+      tags:
+      - division-controller
+      summary: Get a division by its id
+      operationId: getOne
+      parameters:
+      - name: divisionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: Division not found
+        "200":
+          description: Found the division
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DivisionResponse'
+    delete:
+      tags:
+      - division-controller
+      summary: Delete a division by its id
+      operationId: deleteOne
+      parameters:
+      - name: divisionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: Division deleted successfully
+    patch:
+      tags:
+      - division-controller
+      summary: Update a division by its id
+      operationId: updateOne
+      parameters:
+      - name: divisionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DivisionUpdatingRequest'
+        required: true
+      responses:
+        "409":
+          description: "The provided name is already in use \t\n The provided division\
+            \ id does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "200":
+          description: Division updated successfully
+  /api/v1/championships/{championshipId}:
+    get:
+      tags:
+      - championship-controller
+      summary: Get a championship by its id
+      operationId: getOne_1
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Found the championship
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChampionshipResponse'
+        "404":
+          description: Championship not found
+    delete:
+      tags:
+      - championship-controller
+      summary: Delete a championship by its id
+      operationId: deleteOne_1
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: Championship deleted successfully
+    patch:
+      tags:
+      - championship-controller
+      summary: Update a championship by its id
+      operationId: updateOne_1
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChampionshipUpdatingRequest'
+        required: true
+      responses:
+        "200":
+          description: Championship updated successfully
+        "400":
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        "409":
+          description: "The provided name is already in use \t\n The provided championship\
+            \ id does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/end:
+    patch:
+      tags:
+      - season-controller
+      summary: End a championship season by its id and championship id
+      operationId: end
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Season ended successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonResponse'
+        "409":
+          description: The provided season does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+  /api/v1/championships/{championshipId}/seasons:
+    get:
+      tags:
+      - season-controller
+      summary: Get all registered seasons by its championship id
+      operationId: getAll_2
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "404":
+          description: No seasons found
+        "200":
+          description: List of all seasons
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonResponse'
+  /api/v1/championships/{championshipId}/seasons/{seasonId}:
+    get:
+      tags:
+      - season-controller
+      summary: Get a season by its id and championship id
+      operationId: getOne_2
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Found the season
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeasonResponse'
+        "404":
+          description: Season not found
+    delete:
+      tags:
+      - season-controller
+      summary: Delete a season by its id
+      operationId: deleteOne_2
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: Season deleted successfully
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}:
+    get:
+      tags:
+      - match-controller
+      summary: Get a match by its id
+      operationId: getOne_3
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Found the match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+        "404":
+          description: Match not found
+    delete:
+      tags:
+      - match-controller
+      summary: Delete a match by its id
+      operationId: deleteOne_3
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: Match deleted successfully
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events:
+    get:
+      tags:
+      - events-controller
+      summary: Get all registered events
+      operationId: getAll_4
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: List of all registered events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "404":
+          description: No events found
+  /api/v1/championships/{championshipId}/seasons/{seasonId}/matches/{matchId}/events/{eventName}:
+    get:
+      tags:
+      - events-controller
+      summary: Get all registered events by its event name
+      operationId: getAllByEventType
+      parameters:
+      - name: championshipId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: seasonId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: eventName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: List of all registered events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        "404":
+          description: No events found
+components:
+  schemas:
+    DivisionRegisteringRequest:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+    ConflictResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        resource:
+          type: object
+    BadRequestResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationResult'
+    ValidationResult:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    DivisionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    ChampionshipRegisteringRequest:
+      required:
+      - country
+      - division-id
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        division-id:
+          type: string
+          format: uuid
+    ChampionshipResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        division:
+          $ref: '#/components/schemas/DivisionResponse'
+        country:
+          type: string
+        seasons:
+          $ref: '#/components/schemas/CollectionModelEntityModelSeasonResponse'
+    CollectionModelEntityModelSeasonResponse:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityModelSeasonResponse'
+    EntityModelSeasonResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        year:
+          type: integer
+          format: int32
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchResponse'
+        started-at:
+          type: string
+          format: date-time
+        ended-at:
+          type: string
+          format: date-time
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        hreflang:
+          type: string
+        media:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+    MatchResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        arena:
+          type: string
+        date:
+          type: string
+          format: date-time
+        team-id-a:
+          type: string
+          format: uuid
+        team-id-b:
+          type: string
+          format: uuid
+        created-at:
+          type: string
+          format: date-time
+    SeasonResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        year:
+          type: integer
+          format: int32
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchResponse'
+        started-at:
+          type: string
+          format: date-time
+        ended-at:
+          type: string
+          format: date-time
+    MatchRegisteringRequest:
+      required:
+      - arena
+      - date
+      - team-id-a
+      - team-id-b
+      type: object
+      properties:
+        arena:
+          type: string
+        date:
+          type: string
+          format: date-time
+        team-id-a:
+          type: string
+          format: uuid
+        team-id-b:
+          type: string
+          format: uuid
+    EventRegisteringRequest:
+      required:
+      - during-stoppage-time
+      - half
+      - time-in-half
+      type: object
+      properties:
+        substitution:
+          $ref: '#/components/schemas/SubstitutionEventRegisteringRequest'
+        player-id:
+          type: string
+          format: uuid
+        half:
+          type: string
+        time-in-half:
+          type: string
+        during-stoppage-time:
+          type: boolean
+    SubstitutionEventRegisteringRequest:
+      required:
+      - playerIdIn
+      - playerIdOut
+      - teamId
+      type: object
+      properties:
+        playerIdIn:
+          type: string
+          format: uuid
+        playerIdOut:
+          type: string
+          format: uuid
+        teamId:
+          type: string
+          format: uuid
+    EventResponse:
+      type: object
+      properties:
+        half:
+          type: string
+        event-name:
+          type: string
+        time-in-half:
+          type: string
+        player-id:
+          type: string
+          format: uuid
+        created-at:
+          type: string
+          format: date-time
+        substitution-event:
+          $ref: '#/components/schemas/SubstitutionEventResponse'
+    SubstitutionEventResponse:
+      type: object
+      properties:
+        player-id-in:
+          type: string
+          format: uuid
+        player-id-out:
+          type: string
+          format: uuid
+        team-id:
+          type: string
+          format: uuid
+    SeasonRegisteringRequest:
+      required:
+      - year
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+    DivisionUpdatingRequest:
+      required:
+      - new-name
+      type: object
+      properties:
+        new-name:
+          type: string
+    ChampionshipUpdatingRequest:
+      type: object
+      properties:
+        new-name:
+          type: string
