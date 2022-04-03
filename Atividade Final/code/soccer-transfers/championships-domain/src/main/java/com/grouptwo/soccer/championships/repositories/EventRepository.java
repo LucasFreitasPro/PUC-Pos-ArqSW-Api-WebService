@@ -15,7 +15,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 	public final String SELECT_ALL = "SELECT e FROM Event e INNER JOIN FETCH e.match m INNER JOIN FETCH m.season s INNER JOIN FETCH s.championship c INNER JOIN FETCH e.substitutionEvent se WHERE c.id = :championshipId AND s.id = :seasonId AND m.id = :matchId";
 	public final String SELECT_ALL_BY_NAME = SELECT_ALL + " AND e.eventType = :eventType";
 	public final String SELECT_ALL_BY_NAME_AND_PLAYER_ID = SELECT_ALL_BY_NAME + " AND e.playerId = :playerId";
-	
+
 	@Query(SELECT_ALL)
 	List<Event> findAll(@Param("championshipId") UUID championshipId, @Param("seasonId") UUID seasonId, @Param("matchId") UUID matchId);
 
@@ -23,5 +23,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 	List<Event> findAllByEventType(@Param("championshipId") UUID championshipId, @Param("seasonId") UUID seasonId, @Param("matchId") UUID matchId, @Param("eventType") EventType eventType);
 
 	@Query(SELECT_ALL_BY_NAME_AND_PLAYER_ID)
-	List<Event> findAllByEventTypeAndPlayerId(@Param("championshipId") UUID championshipId, @Param("seasonId") UUID seasonId, @Param("matchId") UUID matchId, @Param("eventType") EventType eventType, @Param("playerId") UUID playerId);
+	List<Event> findAllByEventTypeAndPlayerId(@Param("championshipId") UUID championshipId, @Param("seasonId") UUID seasonId, @Param("matchId") UUID matchId, @Param("eventType") EventType eventType,
+			@Param("playerId") UUID playerId);
 }

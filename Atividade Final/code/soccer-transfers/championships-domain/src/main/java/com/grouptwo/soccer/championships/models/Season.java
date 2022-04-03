@@ -80,6 +80,14 @@ public class Season {
 		this.endedAt = endedAt;
 	}
 
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	public Championship getChampionship() {
 		return championship;
 	}

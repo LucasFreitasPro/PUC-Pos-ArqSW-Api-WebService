@@ -17,6 +17,7 @@ public class SeasonConverter {
 		Season entity = new Season();
 		BeanUtils.copyProperties(request, entity);
 		entity.setStartedAt(LocalDateTime.now(ZoneId.of("UTC")));
+		entity.setDeleted(Boolean.FALSE);
 		return entity;
 	}
 

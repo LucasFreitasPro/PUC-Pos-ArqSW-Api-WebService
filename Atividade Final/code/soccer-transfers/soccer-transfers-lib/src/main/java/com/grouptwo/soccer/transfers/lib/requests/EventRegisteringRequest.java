@@ -3,7 +3,6 @@ package com.grouptwo.soccer.transfers.lib.requests;
 import java.util.UUID;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -20,11 +19,10 @@ public class EventRegisteringRequest {
 	@NotBlank
 	private String timeInHalf;
 
-	@JsonProperty("during-stoppage-time")
-	@NotNull
-	private Boolean duringStoppageTime;
-
 	private SubstitutionEventRegisteringRequest substitution;
+
+	@JsonProperty("stoppage-time")
+	private StoppageTimeEventRegisteringRequest stoppageTime;
 
 	public UUID getPlayerId() {
 		return playerId;
@@ -50,19 +48,19 @@ public class EventRegisteringRequest {
 		this.timeInHalf = timeInHalf;
 	}
 
-	public Boolean getDuringStoppageTime() {
-		return duringStoppageTime;
-	}
-
-	public void setDuringStoppageTime(Boolean duringStoppageTime) {
-		this.duringStoppageTime = duringStoppageTime;
-	}
-
 	public SubstitutionEventRegisteringRequest getSubstitution() {
 		return substitution;
 	}
 
 	public void setSubstitution(SubstitutionEventRegisteringRequest substitution) {
 		this.substitution = substitution;
+	}
+
+	public StoppageTimeEventRegisteringRequest getStoppageTime() {
+		return stoppageTime;
+	}
+
+	public void setStoppageTime(StoppageTimeEventRegisteringRequest stoppageTime) {
+		this.stoppageTime = stoppageTime;
 	}
 }

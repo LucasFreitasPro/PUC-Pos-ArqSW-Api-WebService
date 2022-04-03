@@ -49,7 +49,7 @@ public class ChampionshipController {
 	private final ChampionshipService championshipService;
 
 	private final ChampionshipResponseModelAssembler championshipResponseModelAssembler;
-
+	
 	public ChampionshipController(ChampionshipService championshipService, ChampionshipResponseModelAssembler championshipResponseModelAssembler, DivisionService divisionService) {
 		this.divisionService = divisionService;
 		this.championshipService = championshipService;

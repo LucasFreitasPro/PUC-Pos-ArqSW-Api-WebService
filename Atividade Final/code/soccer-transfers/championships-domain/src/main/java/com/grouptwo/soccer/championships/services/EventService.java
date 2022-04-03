@@ -47,6 +47,6 @@ public class EventService {
 	@Transactional
 	public EventResponse save(Event event) {
 		Event saved = this.eventRepository.save(event);
-		return saved != null ? this.eventConverter.fromEntityToResponse(saved) : null ;
+		return saved != null ? this.eventConverter.fromEntityToResponse(saved) : null;
 	}
 }

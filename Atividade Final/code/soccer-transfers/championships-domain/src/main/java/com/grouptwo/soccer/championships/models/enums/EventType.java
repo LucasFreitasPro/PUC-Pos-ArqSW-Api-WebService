@@ -9,7 +9,8 @@ public enum EventType {
 	RED_CARD("RD", "Red Card"),
 	YELLOW_CARD("YD", "Yellow Card"),
 	SUBSTITUTION("ST", "Substition"),
-	HALFTIME("HT", "Halftime"),
+	START_HALFTIME("SH", "Start of Halftime"),
+	END_HALFTIME("EH", "End of Halftime"),
 	STOPPAGE_TIME("SP", "Stoppage Time"),
 	WARNING("WN", "Warning"),
 	OFF_SIDE("OS", "Off-side");

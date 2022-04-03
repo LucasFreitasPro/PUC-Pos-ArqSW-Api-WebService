@@ -36,7 +36,7 @@ public class MatchService {
 
 	public MatchResponse findById(UUID championshipId, UUID seasonId, UUID matchId) {
 		Match match = this.matchRepository.findById(championshipId, seasonId, matchId);
-		return match != null ? this.matchConverter.fromEntityToResponse(match) : null ;
+		return match != null ? this.matchConverter.fromEntityToResponse(match) : null;
 	}
 
 	@Transactional
@@ -47,5 +47,10 @@ public class MatchService {
 	public MatchResponse findByTeamIdAAndTeamIdBAndArenaAndDate(UUID aTeamId, UUID bTeamId, String arena, LocalDateTime date) {
 		Match match = this.matchRepository.findByTeamIdAAndTeamIdBAndArenaAndDate(aTeamId, bTeamId, arena, date);
 		return match == null ? null : this.matchConverter.fromEntityToResponse(match);
+	}
+
+	@Transactional
+	public void deleteById(UUID matchId) {
+		this.matchRepository.deleteById(matchId);
 	}
 }

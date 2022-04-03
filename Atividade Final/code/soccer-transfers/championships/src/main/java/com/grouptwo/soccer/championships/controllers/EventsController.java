@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -21,14 +23,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grouptwo.soccer.championships.hateoas.assemblers.EventResponseModelAssembler;
-import com.grouptwo.soccer.championships.models.Event;
-import com.grouptwo.soccer.championships.models.Match;
-import com.grouptwo.soccer.championships.models.SubstitutionEvent;
 import com.grouptwo.soccer.championships.models.enums.EventType;
 import com.grouptwo.soccer.championships.models.enums.Half;
 import com.grouptwo.soccer.championships.services.EventService;
 import com.grouptwo.soccer.championships.services.MatchService;
-import com.grouptwo.soccer.championships.services.SubstitutionEventService;
+import com.grouptwo.soccer.transfers.lib.dtos.EventDTO;
+import com.grouptwo.soccer.transfers.lib.dtos.SubstitutionEventDTO;
 import com.grouptwo.soccer.transfers.lib.requests.EventRegisteringRequest;
 import com.grouptwo.soccer.transfers.lib.responses.BadRequestResponse;
 import com.grouptwo.soccer.transfers.lib.responses.ConflictResponse;
@@ -49,15 +49,19 @@ public class EventsController {
 
 	private final EventService eventService;
 
-	private final SubstitutionEventService substitutionEventService;
-
 	private final EventResponseModelAssembler eventResponseModelAssembler;
 
-	public EventsController(MatchService matchService, EventService eventService, EventResponseModelAssembler eventResponseModelAssembler, SubstitutionEventService substitutionEventService) {
+	private final RabbitTemplate rabbitTemplate;
+
+	private final FanoutExchange fanoutExchange;
+
+	public EventsController(MatchService matchService, EventService eventService, EventResponseModelAssembler eventResponseModelAssembler, RabbitTemplate rabbitTemplate,
+			FanoutExchange fanoutExchange) {
 		this.matchService = matchService;
 		this.eventService = eventService;
-		this.substitutionEventService = substitutionEventService;
 		this.eventResponseModelAssembler = eventResponseModelAssembler;
+		this.rabbitTemplate = rabbitTemplate;
+		this.fanoutExchange = fanoutExchange;
 	}
 
 	@Operation(summary = "Get all registered events")
@@ -95,7 +99,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the start match event")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already started \t\n Match has already ended", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/start-match")
@@ -126,14 +130,16 @@ public class EventsController {
 					return ResponseEntity.status(HttpStatus.CONFLICT)
 							.body(new ConflictResponse<EntityModel<EventResponse>>("Match has already ended", this.eventResponseModelAssembler.toModel(all.get(0))));
 				} else {
-					Event event = new Event();
-					event.setEventType(EventType.START_MATCH);
+					EventDTO event = new EventDTO();
+					event.setEventName(EventType.START_MATCH.getDesc());
 					event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-					event.setMatch(new Match(matchResponse.getId()));
-					event.setHalf(half);
+					event.setMatchId(matchResponse.getId());
+					event.setHalfName(half.getDesc());
 					event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
-					EventResponse eventResponse = this.eventService.save(event);
-					return ResponseEntity.status(HttpStatus.CREATED).body(this.eventResponseModelAssembler.toModel(eventResponse));
+
+					convertAndSend(event);
+
+					return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 				}
 			}
 		} else {
@@ -142,25 +148,10 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the end match event")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match must be started first \t\n Match has already ended", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/end-match")
-	public ResponseEntity<Object> endMatch(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId,
-			@RequestBody @Valid EventRegisteringRequest eventRegisteringRequest, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			final BadRequestResponse badRequestResponse = new BadRequestResponse();
-			bindingResult.getFieldErrors().stream().forEach(e -> badRequestResponse.addError(e.getField(), e.getDefaultMessage()));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
-		}
-
-		Half half = Half.fromDesc(eventRegisteringRequest.getHalf());
-		if (half == null) {
-			final BadRequestResponse badRequestResponse = new BadRequestResponse();
-			badRequestResponse.addError("half", "The provided half does not exist. Possible values are " + Half.toListDesc().toString());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
-		}
-
+	public ResponseEntity<Object> endMatch(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
 		MatchResponse matchResponse = this.matchService.findById(championshipId, seasonId, matchId);
 		if (matchResponse != null) {
 			List<EventResponse> all = this.eventService.findAllByEventType(championshipId, seasonId, matchId, EventType.START_MATCH);
@@ -172,14 +163,14 @@ public class EventsController {
 					return ResponseEntity.status(HttpStatus.CONFLICT)
 							.body(new ConflictResponse<EntityModel<EventResponse>>("Match has already ended", this.eventResponseModelAssembler.toModel(all.get(0))));
 				} else {
-					Event event = new Event();
-					event.setEventType(EventType.END_MATCH);
+					EventDTO event = new EventDTO();
+					event.setEventName(EventType.END_MATCH.getDesc());
 					event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-					event.setMatch(new Match(matchResponse.getId()));
-					event.setHalf(half);
-					event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
-					EventResponse eventResponse = this.eventService.save(event);
-					return ResponseEntity.status(HttpStatus.CREATED).body(this.eventResponseModelAssembler.toModel(eventResponse));
+					event.setMatchId(matchResponse.getId());
+
+					convertAndSend(event);
+
+					return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 				}
 			}
 		} else {
@@ -188,7 +179,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the goal event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already ended \t\n Match must be started first", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/goal")
@@ -223,15 +214,17 @@ public class EventsController {
 				if (all == null) {
 					return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EventResponse>("Match must be started first"));
 				} else {
-					Event event = new Event();
-					event.setEventType(EventType.GOAL);
+					EventDTO event = new EventDTO();
+					event.setEventName(EventType.GOAL.getDesc());
 					event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-					event.setMatch(new Match(matchResponse.getId()));
-					event.setHalf(half);
+					event.setMatchId(matchResponse.getId());
+					event.setHalfName(half.getDesc());
 					event.setPlayerId(eventRegisteringRequest.getPlayerId());
 					event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
-					EventResponse eventResponse = this.eventService.save(event);
-					return ResponseEntity.status(HttpStatus.CREATED).body(this.eventResponseModelAssembler.toModel(eventResponse));
+
+					convertAndSend(event);
+
+					return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 				}
 			}
 		} else {
@@ -240,7 +233,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the foul event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already ended \t\n Match must be started first", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/foul")
@@ -275,15 +268,17 @@ public class EventsController {
 				if (all == null) {
 					return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EventResponse>("Match must be started first"));
 				} else {
-					Event event = new Event();
-					event.setEventType(EventType.FOUL);
+					EventDTO event = new EventDTO();
+					event.setEventName(EventType.FOUL.getDesc());
 					event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-					event.setMatch(new Match(matchResponse.getId()));
-					event.setHalf(half);
+					event.setMatchId(matchResponse.getId());
+					event.setHalfName(half.getDesc());
 					event.setPlayerId(eventRegisteringRequest.getPlayerId());
 					event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
-					EventResponse eventResponse = this.eventService.save(event);
-					return ResponseEntity.status(HttpStatus.CREATED).body(this.eventResponseModelAssembler.toModel(eventResponse));
+
+					convertAndSend(event);
+
+					return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 				}
 			}
 		} else {
@@ -292,7 +287,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the red card event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already ended \t\n Match must be started first \t\n The player has already received a red card", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/red-card")
@@ -329,17 +324,20 @@ public class EventsController {
 				} else {
 					all = this.eventService.findAllByEventType(championshipId, seasonId, matchId, EventType.RED_CARD);
 					if (all != null && !all.isEmpty()) {
-						return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EntityModel<EventResponse>>("The player has already received a red card", this.eventResponseModelAssembler.toModel(all.get(0))));
+						return ResponseEntity.status(HttpStatus.CONFLICT)
+								.body(new ConflictResponse<EntityModel<EventResponse>>("The player has already received a red card", this.eventResponseModelAssembler.toModel(all.get(0))));
 					} else {
-						Event event = new Event();
-						event.setEventType(EventType.RED_CARD);
+						EventDTO event = new EventDTO();
+						event.setEventName(EventType.RED_CARD.getDesc());
 						event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-						event.setMatch(new Match(matchResponse.getId()));
-						event.setHalf(half);
+						event.setMatchId(matchResponse.getId());
+						event.setHalfName(half.getDesc());
 						event.setPlayerId(eventRegisteringRequest.getPlayerId());
 						event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
-						EventResponse eventResponse = this.eventService.save(event);
-						return ResponseEntity.status(HttpStatus.CREATED).body(this.eventResponseModelAssembler.toModel(eventResponse));
+
+						convertAndSend(event);
+
+						return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 					}
 				}
 			}
@@ -349,7 +347,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the yellow card event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "Match has already ended \t\n Match must be started first \t\n The player has already received two yellow cards \t\n The provided match does not exist \t\n The player has already received a red card", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/yellow-card")
@@ -387,24 +385,28 @@ public class EventsController {
 					List<EventResponse> yellowCards = this.eventService.findAllByEventType(championshipId, seasonId, matchId, EventType.YELLOW_CARD);
 					if (yellowCards != null && !yellowCards.isEmpty() && all.size() == 2) {
 						List<EntityModel<EventResponse>> collect = yellowCards.stream().map(this.eventResponseModelAssembler::toModel).collect(Collectors.toList());
-						return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<CollectionModel<EntityModel<EventResponse>>>("The player has already received two yellow cards", CollectionModel.of(collect)));
+						return ResponseEntity.status(HttpStatus.CONFLICT)
+								.body(new ConflictResponse<CollectionModel<EntityModel<EventResponse>>>("The player has already received two yellow cards", CollectionModel.of(collect)));
 					} else {
 						all = this.eventService.findAllByEventType(championshipId, seasonId, matchId, EventType.RED_CARD);
 						if (all != null && !all.isEmpty()) {
-							return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EntityModel<EventResponse>>("The player has already received a red card", this.eventResponseModelAssembler.toModel(all.get(0))));
+							return ResponseEntity.status(HttpStatus.CONFLICT)
+									.body(new ConflictResponse<EntityModel<EventResponse>>("The player has already received a red card", this.eventResponseModelAssembler.toModel(all.get(0))));
 						} else {
-							Event event = new Event();
-							event.setEventType(EventType.YELLOW_CARD);
+							EventDTO event = new EventDTO();
+							event.setEventName(EventType.YELLOW_CARD.getDesc());
 							event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-							event.setMatch(new Match(matchResponse.getId()));
-							event.setHalf(half);
+							event.setMatchId(matchResponse.getId());
+							event.setHalfName(half.getDesc());
 							event.setPlayerId(eventRegisteringRequest.getPlayerId());
 							event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
-							EventResponse eventResponse = this.eventService.save(event);
 							if (yellowCards.size() == 1) {
 								redCard(championshipId, seasonId, matchId, eventRegisteringRequest, bindingResult);
 							}
-							return ResponseEntity.status(HttpStatus.CREATED).body(this.eventResponseModelAssembler.toModel(eventResponse));
+
+							convertAndSend(event);
+
+							return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 						}
 					}
 				}
@@ -415,19 +417,19 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the substitution event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "Match has already ended \t\n Match must be started first \t\n The player has already received two yellow cards \t\n The provided match does not exist \t\n The player has already received a red card", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/substitution")
 	public ResponseEntity<Object> substition(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId,
 			@RequestBody @Valid EventRegisteringRequest eventRegisteringRequest, BindingResult bindingResult) {
+
+		final BadRequestResponse badRequestResponse = new BadRequestResponse();
 		if (bindingResult.hasErrors()) {
-			final BadRequestResponse badRequestResponse = new BadRequestResponse();
 			bindingResult.getFieldErrors().stream().forEach(e -> badRequestResponse.addError(e.getField(), e.getDefaultMessage()));
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
 		}
 
-		final BadRequestResponse badRequestResponse = new BadRequestResponse();
 		if (eventRegisteringRequest.getSubstitution() == null) {
 			badRequestResponse.addError("substitution", "Must not be null");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
@@ -445,12 +447,7 @@ public class EventsController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
 		}
 		if (eventRegisteringRequest.getSubstitution().getPlayerIdIn().equals(eventRegisteringRequest.getSubstitution().getPlayerIdOut())) {
-			badRequestResponse.addError("player-id-in", "Incoming and outcoming player cannot de the same");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
-		}
-
-		if (eventRegisteringRequest.getPlayerId() != null) {
-			badRequestResponse.addError("player-id", "Must be null");
+			badRequestResponse.addError("player-id-in", "Incoming and outcoming player cannot be the same");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
 		}
 
@@ -480,24 +477,23 @@ public class EventsController {
 							return ResponseEntity.status(HttpStatus.CONFLICT).body(
 									new ConflictResponse<EntityModel<EventResponse>>("The outcoming player has already received a red card", this.eventResponseModelAssembler.toModel(all.get(0))));
 						} else {
-							Event event = new Event();
-							event.setEventType(EventType.SUBSTITUTION);
+							EventDTO event = new EventDTO();
+							event.setEventName(EventType.SUBSTITUTION.getDesc());
 							event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-							event.setMatch(new Match(matchResponse.getId()));
-							event.setHalf(half);
-							event.setPlayerId(eventRegisteringRequest.getPlayerId());
+							event.setMatchId(matchResponse.getId());
+							event.setHalfName(half.getDesc());
+							event.setPlayerId(null);
 							event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
-							EventResponse eventResponse = this.eventService.save(event);
 
-							SubstitutionEvent substitutionEvent = new SubstitutionEvent();
-							substitutionEvent.setEvent(this.eventService.getEventConverter().fromResponseToEntity(eventResponse));
-							substitutionEvent.setPlayerIdIn(eventRegisteringRequest.getSubstitution().getPlayerIdIn());
-							substitutionEvent.setPlayerIdOut(eventRegisteringRequest.getSubstitution().getPlayerIdOut());
-							substitutionEvent.setTeamId(eventRegisteringRequest.getSubstitution().getTeamId());
+							SubstitutionEventDTO substitutionEventDTO = new SubstitutionEventDTO();
+							substitutionEventDTO.setPlayerIdIn(eventRegisteringRequest.getSubstitution().getPlayerIdIn());
+							substitutionEventDTO.setPlayerIdOut(eventRegisteringRequest.getSubstitution().getPlayerIdOut());
+							substitutionEventDTO.setTeamId(eventRegisteringRequest.getSubstitution().getTeamId());
+							event.setSubstitutionEvent(substitutionEventDTO);
 
-							eventResponse.setSubstitutionEvent(this.substitutionEventService.save(substitutionEvent));
+							convertAndSend(event);
 
-							return ResponseEntity.status(HttpStatus.CREATED).body(this.eventResponseModelAssembler.toModel(eventResponse));
+							return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 						}
 					}
 				}
@@ -507,37 +503,107 @@ public class EventsController {
 		}
 	}
 
-	@Operation(summary = "Register the halftime event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
-	@PostMapping(path = "/halftime")
-	public ResponseEntity<Object> halftime(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId,
-			@RequestBody @Valid EventRegisteringRequest eventRegisteringRequest, BindingResult bindingResult) {
+	@Operation(summary = "Register the start halftime event in a match")
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
+	@PostMapping(path = "/halftime/start")
+	public ResponseEntity<Object> startHalftime(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
 		MatchResponse matchResponse = this.matchService.findById(championshipId, seasonId, matchId);
 		if (matchResponse != null) {
-			Event event = new Event();
-			event.setEventType(EventType.HALFTIME);
+			EventDTO event = new EventDTO();
+			event.setEventName(EventType.START_HALFTIME.getDesc());
 			event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
-			event.setMatch(new Match(matchResponse.getId()));
-			EventResponse eventResponse = this.eventService.save(event);
-			return ResponseEntity.status(HttpStatus.CREATED).body(eventResponse);
+			event.setMatchId(matchResponse.getId());
+
+			convertAndSend(event);
+
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		} else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EventResponse>("The provided match does not exist"));
+		}
+	}
+
+	@Operation(summary = "Register the end halftime event in a match")
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
+	@PostMapping(path = "/halftime/end")
+	public ResponseEntity<Object> endHalftime(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
+		MatchResponse matchResponse = this.matchService.findById(championshipId, seasonId, matchId);
+		if (matchResponse != null) {
+			EventDTO event = new EventDTO();
+			event.setEventName(EventType.END_HALFTIME.getDesc());
+			event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
+			event.setMatchId(matchResponse.getId());
+
+			convertAndSend(event);
+
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 		} else {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EventResponse>("The provided match does not exist"));
 		}
 	}
 
 	@Operation(summary = "Register the stoppage time event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/stoppage-time")
 	public ResponseEntity<Object> stoppageTime(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId,
 			@RequestBody @Valid EventRegisteringRequest eventRegisteringRequest, BindingResult bindingResult) {
-		return ResponseEntity.status(HttpStatus.CREATED).body("");
+		if (bindingResult.hasErrors()) {
+			final BadRequestResponse badRequestResponse = new BadRequestResponse();
+			bindingResult.getFieldErrors().stream().forEach(e -> badRequestResponse.addError(e.getField(), e.getDefaultMessage()));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
+		}
+
+		if (eventRegisteringRequest.getStoppageTime() == null) {
+			final BadRequestResponse badRequestResponse = new BadRequestResponse();
+			badRequestResponse.addError("stoppage-time", "Must not be null");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
+		}
+		if (eventRegisteringRequest.getStoppageTime().getTime() == null || eventRegisteringRequest.getStoppageTime().getTime() <= Short.valueOf("0")) {
+			final BadRequestResponse badRequestResponse = new BadRequestResponse();
+			badRequestResponse.addError("time", "Must not be null, zero or negative");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
+		}
+
+		MatchResponse matchResponse = this.matchService.findById(championshipId, seasonId, matchId);
+		if (matchResponse != null) {
+			EventDTO event = new EventDTO();
+			event.setEventName(EventType.STOPPAGE_TIME.getDesc());
+			event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
+			event.setMatchId(matchResponse.getId());
+			event.setStoppageTime(eventRegisteringRequest.getStoppageTime().getTime());
+
+			convertAndSend(event);
+
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		} else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EventResponse>("The provided match does not exist"));
+		}
 	}
 
 	@Operation(summary = "Register the warning event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@PostMapping(path = "/warning")
-	public ResponseEntity<Object> warning(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId,
-			@RequestBody @Valid EventRegisteringRequest eventRegisteringRequest, BindingResult bindingResult) {
-		return ResponseEntity.status(HttpStatus.CREATED).body("");
+	public ResponseEntity<Object> warning(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
+		MatchResponse matchResponse = this.matchService.findById(championshipId, seasonId, matchId);
+		if (matchResponse != null) {
+			EventDTO event = new EventDTO();
+			event.setEventName(EventType.WARNING.getDesc());
+			event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
+			event.setMatchId(matchResponse.getId());
+
+			convertAndSend(event);
+
+			return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		} else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ConflictResponse<EventResponse>("The provided match does not exist"));
+		}
+	}
+
+	private void convertAndSend(EventDTO event) {
+		this.rabbitTemplate.convertAndSend(this.fanoutExchange.getName(), "", event);
 	}
 }

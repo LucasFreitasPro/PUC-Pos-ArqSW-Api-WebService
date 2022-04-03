@@ -30,12 +30,12 @@ public class Event {
 
 	private UUID playerId;
 
-	// acrescimo
-
 	@Column(nullable = false, length = 2)
 	private Half half;
 
 	private String timeInHalf;
+
+	private Short stoppageTime;
 
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
@@ -109,5 +109,13 @@ public class Event {
 
 	public void setMatch(Match match) {
 		this.match = match;
+	}
+
+	public Short getStoppageTime() {
+		return stoppageTime;
+	}
+
+	public void setStoppageTime(Short stoppageTime) {
+		this.stoppageTime = stoppageTime;
 	}
 }
