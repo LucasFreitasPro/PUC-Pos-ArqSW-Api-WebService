@@ -394,41 +394,6 @@
 			]
 		},
 		{
-			"name": "E-mail",
-			"item": [
-				{
-					"name": "Send E-mail",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"to-email\" : \"lucasfrpp@gmail.com\",\r\n    \"cc-email\" : \"lucasfrpp@gmail.com\",\r\n    \"subject\" : \"AWS - Apresentação do Trabalho - Monitoramento\",\r\n    \"message\" : \"Teste 2\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8085/api/v1/email",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8085",
-							"path": [
-								"api",
-								"v1",
-								"email"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Championships",
 			"item": [
 				{
@@ -438,7 +403,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Brasileirão\",\r\n    \"division-id\" : \"0c34b5e8-b20a-4894-aaff-84b09b03b1f5\",\r\n    \"country\" : \"Brasil\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\" : \"Brasileirão\",\r\n    \"division-id\" : \"09dd433a-49b9-408d-ad4f-160f848cbe29\",\r\n    \"country\" : \"Brasil\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -462,7 +427,7 @@
 					"response": []
 				},
 				{
-					"name": "Get All",
+					"name": "All Championships",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -483,10 +448,63 @@
 					"response": []
 				},
 				{
-					"name": "Get One",
+					"name": "Get a Championship",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/e2f0957d-750c-4bfa-81a7-04396ba1d74d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"e2f0957d-750c-4bfa-81a7-04396ba1d74d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Championship",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/e2f0957d-750c-4bfa-81a7-04396ba1d74d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"e2f0957d-750c-4bfa-81a7-04396ba1d74d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Championship",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"new-name\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8081/api/v1/championships/e2f0957d-750c-4bfa-81a7-04396ba1d74d",
 							"protocol": "http",
@@ -524,7 +542,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8081/api/v1/championships/e2f0957d-750c-4bfa-81a7-04396ba1d74d/seasons/start",
+							"raw": "http://localhost:8081/api/v1/championships/364b6e72-f130-4ace-b885-095cb1d2767a/seasons/start",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -534,9 +552,106 @@
 								"api",
 								"v1",
 								"championships",
-								"e2f0957d-750c-4bfa-81a7-04396ba1d74d",
+								"364b6e72-f130-4ace-b885-095cb1d2767a",
 								"seasons",
 								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Seasons",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "End Season",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/3fa85f64-5717-4562-b3fc-2c963f66afa6/end",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"end"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Season",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Season",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6"
 							]
 						}
 					},
@@ -548,7 +663,7 @@
 			"name": "Divisions",
 			"item": [
 				{
-					"name": "Get All",
+					"name": "All Divisions",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -599,7 +714,7 @@
 					"response": []
 				},
 				{
-					"name": "Get One",
+					"name": "Get a Division",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -621,7 +736,7 @@
 					"response": []
 				},
 				{
-					"name": "Update One",
+					"name": "Update a Divisions",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -652,7 +767,7 @@
 					"response": []
 				},
 				{
-					"name": "Delete One",
+					"name": "Delete a Division",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -668,6 +783,601 @@
 								"v1",
 								"divisions",
 								"680ced40-3eea-41fe-a697-7960a0c37cba"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Matches",
+			"item": [
+				{
+					"name": "All Matches",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register a Match",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"team-id-a\" : \"7b2a166e-8abd-4bdd-9077-c78bc4a80bec\",\r\n    \"team-id-b\" : \"502baa58-aa9e-431d-8709-bda463e47eb6\",\r\n    \"arena\" : \"Mineirão\",\r\n    \"date\" : \"2022-04-07T21:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/364b6e72-f130-4ace-b885-095cb1d2767a/seasons/4bad29ea-a284-4287-b7f5-54502034ab00/matches",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"364b6e72-f130-4ace-b885-095cb1d2767a",
+								"seasons",
+								"4bad29ea-a284-4287-b7f5-54502034ab00",
+								"matches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Match",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/04d7de55-6646-4bfc-8d8f-291afc460828",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"04d7de55-6646-4bfc-8d8f-291afc460828"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Match",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/04d7de55-6646-4bfc-8d8f-291afc460828",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"04d7de55-6646-4bfc-8d8f-291afc460828"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Match",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"arena\": \"string\",\r\n  \"date\": \"2022-04-04T01:28:10.498Z\",\r\n  \"team-id-a\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"team-id-b\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "All Events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Events by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/Yellow Card",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"Yellow Card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Yellow Card",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"substitution\": {\r\n    \"playerIdIn\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"playerIdOut\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"teamId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  },\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"half\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"stoppage-time\": {\r\n    \"time\": 0\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/yellow-card",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"yellow-card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Warning",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"half\": \"string\",\r\n  \"event-name\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"created-at\": \"2022-04-04T01:34:57.355Z\",\r\n  \"substitution-event\": {\r\n    \"player-id-in\": \"\",\r\n    \"player-id-out\": \"\",\r\n    \"team-id\": \"\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/warning",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"warning"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Substitution",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"substitution\": {\r\n    \"playerIdIn\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"playerIdOut\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"teamId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n  },\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"half\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"stoppage-time\": {\r\n    \"time\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/substitution",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"substitution"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stoppage Time",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"substitution\": {\r\n    \"playerIdIn\": \"\",\r\n    \"playerIdOut\": \"\",\r\n    \"teamId\": \"\"\r\n  },\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"half\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"stoppage-time\": {\r\n    \"time\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/stoppage-time",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"stoppage-time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start a Match",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/364b6e72-f130-4ace-b885-095cb1d2767a/seasons/4bad29ea-a284-4287-b7f5-54502034ab00/matches/0aa5ecaa-54f1-4a91-8a2e-3bd14bd6ee51/events/start-match",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"364b6e72-f130-4ace-b885-095cb1d2767a",
+								"seasons",
+								"4bad29ea-a284-4287-b7f5-54502034ab00",
+								"matches",
+								"0aa5ecaa-54f1-4a91-8a2e-3bd14bd6ee51",
+								"events",
+								"start-match"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Red Card",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"substitution\": {\r\n    \"playerIdIn\": \"\",\r\n    \"playerIdOut\": \"\",\r\n    \"teamId\": \"\"\r\n  },\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"half\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"stoppage-time\": {\r\n    \"time\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/red-card",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"red-card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start Halftime",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"half\": \"string\",\r\n  \"event-name\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"created-at\": \"2022-04-04T01:41:14.155Z\",\r\n  \"substitution-event\": {\r\n    \"player-id-in\": \"\",\r\n    \"player-id-out\": \"\",\r\n    \"team-id\": \"\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/halftime/start",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"halftime",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "End Halftime",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/halftime/end",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"halftime",
+								"end"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Goal",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"substitution\": {\r\n    \"playerIdIn\": \"\",\r\n    \"playerIdOut\": \"\",\r\n    \"teamId\": \"\"\r\n  },\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"half\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"stoppage-time\": {\r\n    \"time\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/goal",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"goal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Foul",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"substitution\": {\r\n    \"playerIdIn\": \"\",\r\n    \"playerIdOut\": \"\",\r\n    \"teamId\": \"\"\r\n  },\r\n  \"player-id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"half\": \"string\",\r\n  \"time-in-half\": \"string\",\r\n  \"stoppage-time\": {\r\n    \"time\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/foul",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"foul"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "End a Match",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/championships/26b39ad1-a50a-4e37-b115-cf968ae6289d/seasons/aef83d8a-4eef-4599-89e5-ebe90c5a6ee4/matches/3fa85f64-5717-4562-b3fc-2c963f66afa6/events/end-match",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"championships",
+								"26b39ad1-a50a-4e37-b115-cf968ae6289d",
+								"seasons",
+								"aef83d8a-4eef-4599-89e5-ebe90c5a6ee4",
+								"matches",
+								"3fa85f64-5717-4562-b3fc-2c963f66afa6",
+								"events",
+								"end-match"
 							]
 						}
 					},

@@ -99,25 +99,11 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the start match event")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already started \t\n Match has already ended", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/start-match")
-	public ResponseEntity<Object> startMatch(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId,
-			@RequestBody @Valid EventRegisteringRequest eventRegisteringRequest, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			final BadRequestResponse badRequestResponse = new BadRequestResponse();
-			bindingResult.getFieldErrors().stream().forEach(e -> badRequestResponse.addError(e.getField(), e.getDefaultMessage()));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
-		}
-
-		Half half = Half.fromDesc(eventRegisteringRequest.getHalf());
-		if (half == null) {
-			final BadRequestResponse badRequestResponse = new BadRequestResponse();
-			badRequestResponse.addError("half", "The provided half does not exist. Possible values are " + Half.toListDesc().toString());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequestResponse);
-		}
-
+	public ResponseEntity<Object> startMatch(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
 		MatchResponse matchResponse = this.matchService.findById(championshipId, seasonId, matchId);
 		if (matchResponse != null) {
 			List<EventResponse> all = this.eventService.findAllByEventType(championshipId, seasonId, matchId, EventType.START_MATCH);
@@ -134,8 +120,7 @@ public class EventsController {
 					event.setEventName(EventType.START_MATCH.getDesc());
 					event.setCreatedAt(LocalDateTime.now(ZoneId.of("UTC")));
 					event.setMatchId(matchResponse.getId());
-					event.setHalfName(half.getDesc());
-					event.setTimeInHalf(eventRegisteringRequest.getTimeInHalf());
+					event.setHalfName(Half.FISRT_HALF.getDesc());
 
 					convertAndSend(event);
 
@@ -148,7 +133,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the end match event")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match must be started first \t\n Match has already ended", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@PostMapping(path = "/end-match")
 	public ResponseEntity<Object> endMatch(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
@@ -179,7 +164,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the goal event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already ended \t\n Match must be started first", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/goal")
@@ -233,7 +218,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the foul event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already ended \t\n Match must be started first", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/foul")
@@ -287,7 +272,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the red card event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist \t\n Match has already ended \t\n Match must be started first \t\n The player has already received a red card", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/red-card")
@@ -347,7 +332,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the yellow card event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "Match has already ended \t\n Match must be started first \t\n The player has already received two yellow cards \t\n The provided match does not exist \t\n The player has already received a red card", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/yellow-card")
@@ -417,7 +402,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the substitution event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "Match has already ended \t\n Match must be started first \t\n The player has already received two yellow cards \t\n The provided match does not exist \t\n The player has already received a red card", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/substitution")
@@ -504,7 +489,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the start halftime event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@PostMapping(path = "/halftime/start")
 	public ResponseEntity<Object> startHalftime(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
@@ -524,7 +509,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the end halftime event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@PostMapping(path = "/halftime/end")
 	public ResponseEntity<Object> endHalftime(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
@@ -544,7 +529,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the stoppage time event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_BAD_REQUEST, description = "Invalid payload", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestResponse.class)))
 	@PostMapping(path = "/stoppage-time")
@@ -584,7 +569,7 @@ public class EventsController {
 	}
 
 	@Operation(summary = "Register the warning event in a match")
-	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "EventDTO registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
+	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CREATED, description = "Event registered successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EventResponse.class)))
 	@ApiResponse(responseCode = CommonUtil.HTTP_STATUS_CODE_CONFLICT, description = "The provided match does not exist", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConflictResponse.class)))
 	@PostMapping(path = "/warning")
 	public ResponseEntity<Object> warning(@PathVariable("championshipId") UUID championshipId, @PathVariable("seasonId") UUID seasonId, @PathVariable("matchId") UUID matchId) {
